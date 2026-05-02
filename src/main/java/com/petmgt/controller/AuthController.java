@@ -1,12 +1,12 @@
 package com.petmgt.controller;
 
 import com.petmgt.dto.RegisterForm;
+import com.petmgt.exception.BusinessException;
 import com.petmgt.service.UserService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 public class AuthController {
@@ -30,13 +30,12 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public String register(RegisterForm form, RedirectAttributes redirectAttributes) {
+    public String register(RegisterForm form) {
         try {
             userService.register(form);
-            return "redirect:/login?registered";
         } catch (IllegalArgumentException e) {
-            redirectAttributes.addFlashAttribute("error", e.getMessage());
-            return "redirect:/register";
+            throw new BusinessException(e.getMessage());
         }
+        return "redirect:/login?registered";
     }
 }

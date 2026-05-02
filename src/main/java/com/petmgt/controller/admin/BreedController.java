@@ -2,6 +2,7 @@ package com.petmgt.controller.admin;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.petmgt.entity.Breed;
+import com.petmgt.exception.BusinessException;
 import com.petmgt.mapper.BreedMapper;
 import com.petmgt.service.BreedService;
 import org.springframework.stereotype.Controller;
@@ -73,12 +74,11 @@ public class BreedController {
     }
 
     @PostMapping("/{id}/delete")
-    public String delete(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+    public String delete(@PathVariable Long id) {
         try {
             breedService.delete(id);
-            redirectAttributes.addFlashAttribute("success", "品种已删除");
         } catch (IllegalArgumentException e) {
-            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            throw new BusinessException(e.getMessage());
         }
         return "redirect:/admin/breeds";
     }
