@@ -1,5 +1,6 @@
 package com.petmgt.controller.admin;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.petmgt.entity.Breed;
 import com.petmgt.exception.BusinessException;
@@ -12,7 +13,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.util.List;
 
 @Controller
 @RequestMapping("/admin/breeds")
@@ -82,5 +86,15 @@ public class BreedController {
             throw new BusinessException(e.getMessage());
         }
         return "redirect:/admin/breeds";
+    }
+
+    @GetMapping("/api")
+    @ResponseBody
+    public List<Breed> apiBreeds(@RequestParam(required = false) String petType) {
+        if (petType == null || petType.isEmpty()) {
+            return breedMapper.selectList(null);
+        }
+        return breedMapper.selectList(
+            new LambdaQueryWrapper<Breed>().eq(Breed::getPetType, petType));
     }
 }

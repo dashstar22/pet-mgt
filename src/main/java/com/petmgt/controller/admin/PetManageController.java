@@ -84,6 +84,7 @@ public class PetManageController {
         model.addAttribute("pet", new Pet());
         model.addAttribute("breeds", breedMapper.selectList(null));
         model.addAttribute("isEdit", false);
+        model.addAttribute("petType", "");
         return "admin/pet-form";
     }
 
@@ -108,6 +109,8 @@ public class PetManageController {
         if (pet == null) {
             return "redirect:/admin/pets";
         }
+        Breed breed = breedMapper.selectById(pet.getBreedId());
+        model.addAttribute("petType", breed != null ? breed.getPetType() : "");
         List<PetImage> images = petImageMapper.selectList(
             new LambdaQueryWrapper<PetImage>().eq(PetImage::getPetId, id));
         model.addAttribute("title", "编辑宠物");

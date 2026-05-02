@@ -19,8 +19,18 @@
                         <input type="text" name="name" class="form-control" th:value="${pet.name}" required>
                     </div>
                     <div class="col-md-6">
+                        <label class="form-label">宠物类型</label>
+                        <select id="petTypeSelect" class="form-select">
+                            <option value="">全部类型</option>
+                            <option value="猫" th:selected="${petType == '猫'}">猫</option>
+                            <option value="狗" th:selected="${petType == '狗'}">狗</option>
+                            <option value="兔" th:selected="${petType == '兔'}">兔</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
                         <label class="form-label">品种</label>
-                        <select name="breedId" class="form-select" required>
+                        <select name="breedId" id="breedSelect" class="form-select" required
+                                th:attr="data-selected=${pet.breedId}">
                             <option value="">请选择</option>
                             <option th:each="b : ${breeds}" th:value="${b.id}"
                                     th:text="${b.breedName}"
@@ -146,6 +156,33 @@
             reader.readAsDataURL(file);
         });
     });
+
+    document.getElementById('petTypeSelect').addEventListener('change', async function() {
+        const type = this.value;
+        const breedSelect = document.getElementById('breedSelect');
+        const selectedBreedId = breedSelect.getAttribute('data-selected');
+        let url = '/admin/breeds/api';
+        if (type) url += '?petType=' + encodeURIComponent(type);
+        try {
+            const resp = await fetch(url);
+            const breeds = await resp.json();
+            breedSelect.innerHTML = '<option value="">请选择品种</option>';
+            breeds.forEach(function(b) {
+                const sel = selectedBreedId && b.id == selectedBreedId ? ' selected' : '';
+                breedSelect.innerHTML += '<option value="' + b.id + '"' + sel + '>' + b.breedName + '</option>';
+            });
+        } catch (e) {
+            breedSelect.innerHTML = '<option value="">加载失败</option>';
+        }
+    });
+
+    // On page load for edit mode, pre-load breeds for the pet's type
+    (function() {
+        var typeSelect = document.getElementById('petTypeSelect');
+        if (typeSelect.value) {
+            typeSelect.dispatchEvent(new Event('change'));
+        }
+    })();
 </script>
 </body>
 </html>
