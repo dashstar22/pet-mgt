@@ -68,23 +68,19 @@ public class UserController {
     @PostMapping("/create")
     public String create(User user, @RequestParam(required = false) List<Long> roleIds,
                          RedirectAttributes redirectAttributes) {
-        try {
-            if (userMapper.findByUsername(user.getUsername()) != null) {
-                redirectAttributes.addFlashAttribute("error", "用户名已存在");
-                return "redirect:/admin/users/create";
-            }
-            user.setPassword(passwordEncoder.encode(user.getPassword()));
-            user.setEnabled(user.getEnabled() != null ? user.getEnabled() : 1);
-            userMapper.insert(user);
-            if (roleIds != null) {
-                for (Long roleId : roleIds) {
-                    roleMapper.insertUserRole(user.getId(), roleId);
-                }
-            }
-            redirectAttributes.addFlashAttribute("success", "用户创建成功");
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "创建失败: " + e.getMessage());
+        if (userMapper.findByUsername(user.getUsername()) != null) {
+            redirectAttributes.addFlashAttribute("error", "用户名已存在");
+            return "redirect:/admin/users/create";
         }
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setEnabled(user.getEnabled() != null ? user.getEnabled() : 1);
+        userMapper.insert(user);
+        if (roleIds != null) {
+            for (Long roleId : roleIds) {
+                roleMapper.insertUserRole(user.getId(), roleId);
+            }
+        }
+        redirectAttributes.addFlashAttribute("success", "用户创建成功");
         return "redirect:/admin/users";
     }
 
@@ -108,23 +104,19 @@ public class UserController {
     public String edit(@PathVariable Long id, User user,
                        @RequestParam(required = false) List<Long> roleIds,
                        RedirectAttributes redirectAttributes) {
-        try {
-            User currentUser = SecurityUtil.getCurrentUser();
-            if (currentUser != null && currentUser.getId().equals(id)) {
-                redirectAttributes.addFlashAttribute("error", "不能编辑自己的账号");
-                return "redirect:/admin/users/" + id + "/edit";
-            }
-            user.setId(id);
-            if (user.getPassword() != null && !user.getPassword().isEmpty()) {
-                user.setPassword(passwordEncoder.encode(user.getPassword()));
-            } else {
-                user.setPassword(null);
-            }
-            userMapper.updateById(user);
-            redirectAttributes.addFlashAttribute("success", "用户更新成功");
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "更新失败: " + e.getMessage());
+        User currentUser = SecurityUtil.getCurrentUser();
+        if (currentUser != null && currentUser.getId().equals(id)) {
+            redirectAttributes.addFlashAttribute("error", "不能编辑自己的账号");
+            return "redirect:/admin/users/" + id + "/edit";
         }
+        user.setId(id);
+        if (user.getPassword() != null && !user.getPassword().isEmpty()) {
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+        } else {
+            user.setPassword(null);
+        }
+        userMapper.updateById(user);
+        redirectAttributes.addFlashAttribute("success", "用户更新成功");
         return "redirect:/admin/users";
     }
 

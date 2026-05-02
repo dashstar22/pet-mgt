@@ -92,18 +92,13 @@ public class PetManageController {
                          @RequestParam(required = false) List<MultipartFile> images,
                          @RequestParam(required = false) Integer coverIndex,
                          RedirectAttributes redirectAttributes) {
-        try {
-            pet.setStatus("available");
-            pet.setCreatedBy(SecurityUtil.getCurrentUser().getId());
-            petMapper.insert(pet);
-
-            if (images != null) {
-                saveImages(pet.getId(), images, coverIndex);
-            }
-            redirectAttributes.addFlashAttribute("success", "宠物发布成功");
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "发布失败: " + e.getMessage());
+        pet.setStatus("available");
+        pet.setCreatedBy(SecurityUtil.getCurrentUser().getId());
+        petMapper.insert(pet);
+        if (images != null) {
+            saveImages(pet.getId(), images, coverIndex);
         }
+        redirectAttributes.addFlashAttribute("success", "宠物发布成功");
         return "redirect:/admin/pets";
     }
 
@@ -129,27 +124,21 @@ public class PetManageController {
                        @RequestParam(required = false) Integer coverIndex,
                        @RequestParam(required = false) List<Long> deleteImageIds,
                        RedirectAttributes redirectAttributes) {
-        try {
-            pet.setId(id);
-            petMapper.updateById(pet);
-
-            if (deleteImageIds != null) {
-                for (Long imageId : deleteImageIds) {
-                    PetImage img = petImageMapper.selectById(imageId);
-                    if (img != null) {
-                        fileStorageService.delete(img.getImageUrl());
-                        petImageMapper.deleteById(imageId);
-                    }
+        pet.setId(id);
+        petMapper.updateById(pet);
+        if (deleteImageIds != null) {
+            for (Long imageId : deleteImageIds) {
+                PetImage img = petImageMapper.selectById(imageId);
+                if (img != null) {
+                    fileStorageService.delete(img.getImageUrl());
+                    petImageMapper.deleteById(imageId);
                 }
             }
-
-            if (newImages != null && !newImages.isEmpty()) {
-                saveImages(id, newImages, coverIndex);
-            }
-            redirectAttributes.addFlashAttribute("success", "宠物更新成功");
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "更新失败: " + e.getMessage());
         }
+        if (newImages != null && !newImages.isEmpty()) {
+            saveImages(id, newImages, coverIndex);
+        }
+        redirectAttributes.addFlashAttribute("success", "宠物更新成功");
         return "redirect:/admin/pets";
     }
 
