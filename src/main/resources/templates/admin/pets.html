@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head(title=${title})}"></head>
+<body>
+<nav th:replace="~{fragments/nav :: nav}"></nav>
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1>宠物管理</h1>
+        <a href="/admin/pets/create" class="btn btn-primary">发布宠物</a>
+    </div>
+
+    <div th:if="${success}" class="alert alert-success alert-dismissible fade show">
+        <span th:text="${success}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show">
+        <span th:text="${error}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <form class="row g-2 mb-3" method="get">
+        <div class="col-auto">
+            <input type="text" name="name" class="form-control" placeholder="宠物名称"
+                   th:value="${name}">
+        </div>
+        <div class="col-auto">
+            <select name="breedId" class="form-select">
+                <option value="">全部品种</option>
+                <option th:each="b : ${breeds}" th:value="${b.id}"
+                        th:text="${b.breedName}"
+                        th:selected="${breedId != null && breedId == b.id}"></option>
+            </select>
+        </div>
+        <div class="col-auto">
+            <select name="status" class="form-select">
+                <option value="">全部状态</option>
+                <option value="available" th:selected="${status == 'available'}">可领养</option>
+                <option value="pending" th:selected="${status == 'pending'}">待审核</option>
+                <option value="adopted" th:selected="${status == 'adopted'}">已领养</option>
+            </select>
+        </div>
+        <div class="col-auto">
+            <button type="submit" class="btn btn-outline-primary">搜索</button>
+            <a href="/admin/pets" class="btn btn-outline-secondary">重置</a>
+        </div>
+    </form>
+
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>名称</th>
+                    <th>品种</th>
+                    <th>性别</th>
+                    <th>年龄</th>
+                    <th>状态</th>
+                    <th>创建时间</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="pet : ${page.records}">
+                    <td th:text="${pet.id}">1</td>
+                    <td th:text="${pet.name}">宠物名</td>
+                    <td><span class="badge bg-info" th:text="${pet.breedName}"></span></td>
+                    <td th:text="${pet.gender}">-</td>
+                    <td th:text="${pet.age} + '月'">-</td>
+                    <td>
+                        <span th:if="${pet.status == 'available'}" class="badge bg-success">可领养</span>
+                        <span th:if="${pet.status == 'pending'}" class="badge bg-warning text-dark">待审核</span>
+                        <span th:if="${pet.status == 'adopted'}" class="badge bg-secondary">已领养</span>
+                    </td>
+                    <td th:text="${#temporals.format(pet.createdAt, 'yyyy-MM-dd HH:mm')}">-</td>
+                    <td>
+                        <a th:href="@{/admin/pets/{id}/edit(id=${pet.id})}" class="btn btn-sm btn-outline-primary">编辑</a>
+                        <button class="btn btn-sm btn-outline-danger" data-bs-toggle="modal"
+                                th:attr="data-bs-target='#deleteModal' + ${pet.id}">删除</button>
+
+                        <div class="modal fade" th:id="'deleteModal' + ${pet.id}" tabindex="-1">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">确认删除</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        确定要删除宠物 <strong th:text="${pet.name}"></strong> 及其所有图片吗？
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                                        <form th:action="@{/admin/pets/{id}/delete(id=${pet.id})}" method="post" class="d-inline">
+                                            <button type="submit" class="btn btn-danger">确认删除</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div th:replace="~{fragments/pagination :: pagination(page=${page}, baseUrl='/admin/pets')}"></div>
+</div>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

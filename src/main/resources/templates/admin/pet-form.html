@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head(title=${title})}"></head>
+<body>
+<nav th:replace="~{fragments/nav :: nav}"></nav>
+
+<div class="container mt-4">
+    <h1 th:text="${isEdit} ? '编辑宠物' : '发布宠物'"></h1>
+
+    <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+    <form th:action="${isEdit} ? @{/admin/pets/{id}/edit(id=${pet.id})} : @{/admin/pets/create}"
+          method="post" enctype="multipart/form-data">
+        <div class="row">
+            <div class="col-md-8">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">宠物名称</label>
+                        <input type="text" name="name" class="form-control" th:value="${pet.name}" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">品种</label>
+                        <select name="breedId" class="form-select" required>
+                            <option value="">请选择</option>
+                            <option th:each="b : ${breeds}" th:value="${b.id}"
+                                    th:text="${b.breedName}"
+                                    th:selected="${pet.breedId != null && pet.breedId == b.id}"></option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">性别</label>
+                        <select name="gender" class="form-select" required>
+                            <option value="">请选择</option>
+                            <option value="公" th:selected="${pet.gender == '公'}">公</option>
+                            <option value="母" th:selected="${pet.gender == '母'}">母</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">年龄（月）</label>
+                        <input type="number" name="age" class="form-control" th:value="${pet.age}" required min="0">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">体重（kg）</label>
+                        <input type="number" step="0.01" name="weight" class="form-control" th:value="${pet.weight}">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">健康状态</label>
+                        <select name="healthStatus" class="form-select" required>
+                            <option value="健康" th:selected="${pet.healthStatus == '健康'}">健康</option>
+                            <option value="轻微疾病" th:selected="${pet.healthStatus == '轻微疾病'}">轻微疾病</option>
+                            <option value="需特殊照顾" th:selected="${pet.healthStatus == '需特殊照顾'}">需特殊照顾</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">疫苗状态</label>
+                        <select name="vaccineStatus" class="form-select">
+                            <option value="">请选择</option>
+                            <option value="已接种" th:selected="${pet.vaccineStatus == '已接种'}">已接种</option>
+                            <option value="未接种" th:selected="${pet.vaccineStatus == '未接种'}">未接种</option>
+                            <option value="部分接种" th:selected="${pet.vaccineStatus == '部分接种'}">部分接种</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">绝育状态</label>
+                        <select name="sterilizationStatus" class="form-select">
+                            <option value="">请选择</option>
+                            <option value="已绝育" th:selected="${pet.sterilizationStatus == '已绝育'}">已绝育</option>
+                            <option value="未绝育" th:selected="${pet.sterilizationStatus == '未绝育'}">未绝育</option>
+                        </select>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">性格描述</label>
+                        <textarea name="personality" class="form-control" rows="3" required
+                                  th:text="${pet.personality}"></textarea>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">领养要求</label>
+                        <textarea name="adoptionRequirement" class="form-control" rows="3"
+                                  th:text="${pet.adoptionRequirement}"></textarea>
+                    </div>
+                    <div class="col-md-6" th:if="${isEdit}">
+                        <label class="form-label">状态</label>
+                        <select name="status" class="form-select">
+                            <option value="available" th:selected="${pet.status == 'available'}">可领养</option>
+                            <option value="pending" th:selected="${pet.status == 'pending'}">待审核</option>
+                            <option value="adopted" th:selected="${pet.status == 'adopted'}">已领养</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">上传图片 (jpg/jpeg/png, ≤2MB)</label>
+
+                <div th:if="${isEdit && images != null && !images.isEmpty()}">
+                    <p class="text-muted small">已有图片（勾选后将删除）：</p>
+                    <div class="row g-2 mb-3">
+                        <div class="col-6" th:each="img : ${images}">
+                            <div class="position-relative">
+                                <img th:src="@{/uploads/pets/{name}(name='thumb_' + ${img.imageUrl})}"
+                                     class="img-thumbnail" style="width:100%;height:120px;object-fit:cover;">
+                                <div class="form-check position-absolute top-0 end-0 mt-1 me-1">
+                                    <input type="checkbox" name="deleteImageIds" th:value="${img.id}"
+                                           class="form-check-input">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="imagePreviewContainer" class="row g-2 mb-3"></div>
+
+                <div class="mb-2">
+                    <input type="file" name="images" id="imageInput" class="form-control"
+                           accept="image/jpeg,image/jpg,image/png" multiple>
+                </div>
+                <div class="mb-2">
+                    <label class="form-label small">设为封面（输入图片序号，从 1 开始）</label>
+                    <input type="number" name="coverIndex" class="form-control form-control-sm"
+                           min="1" placeholder="留空则默认第一张">
+                </div>
+            </div>
+        </div>
+        <hr>
+        <button type="submit" class="btn btn-primary">保存</button>
+        <a href="/admin/pets" class="btn btn-secondary">取消</a>
+    </form>
+</div>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.getElementById('imageInput').addEventListener('change', function(e) {
+        const container = document.getElementById('imagePreviewContainer');
+        container.innerHTML = '';
+        Array.from(e.target.files).forEach((file, i) => {
+            const reader = new FileReader();
+            reader.onload = function(ev) {
+                const col = document.createElement('div');
+                col.className = 'col-6';
+                col.innerHTML = '<div class="position-relative">'
+                    + '<img src="' + ev.target.result + '" class="img-thumbnail" style="width:100%;height:120px;object-fit:cover;">'
+                    + '<span class="position-absolute top-0 start-0 badge bg-dark m-1">' + (i + 1) + '</span>'
+                    + '</div>';
+                container.appendChild(col);
+            };
+            reader.readAsDataURL(file);
+        });
+    });
+</script>
+</body>
+</html>
