@@ -7,18 +7,18 @@ CREATE TABLE IF NOT EXISTS `user` (
   `enabled`    TINYINT      NOT NULL DEFAULT 1,
   `created_at` DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `role` (
   `id`        BIGINT      NOT NULL AUTO_INCREMENT PRIMARY KEY,
   `role_name` VARCHAR(50) NOT NULL UNIQUE
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `user_role` (
   `user_id` BIGINT NOT NULL,
   `role_id` BIGINT NOT NULL,
   PRIMARY KEY (`user_id`, `role_id`)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `pet_breed` (
   `id`          BIGINT       NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS `pet_breed` (
   `pet_type`    VARCHAR(50)  NOT NULL,
   `description` TEXT         DEFAULT NULL,
   `created_at`  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `pet` (
   `id`                    BIGINT       NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -46,7 +46,7 @@ CREATE TABLE IF NOT EXISTS `pet` (
   `updated_at`            DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   INDEX `idx_pet_status`    (`status`),
   INDEX `idx_pet_breed_id`  (`breed_id`)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `pet_image` (
   `id`         BIGINT       NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -55,7 +55,7 @@ CREATE TABLE IF NOT EXISTS `pet_image` (
   `is_cover`   TINYINT      NOT NULL DEFAULT 0,
   `created_at` DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
   INDEX `idx_image_pet_id` (`pet_id`)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `adoption_application` (
   `id`              BIGINT       NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -74,7 +74,7 @@ CREATE TABLE IF NOT EXISTS `adoption_application` (
   INDEX `idx_app_status`   (`status`),
   INDEX `idx_app_user_id`  (`user_id`),
   INDEX `idx_app_pet_id`   (`pet_id`)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `ai_match_record` (
   `id`                 BIGINT   NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -86,7 +86,7 @@ CREATE TABLE IF NOT EXISTS `ai_match_record` (
   `created_at`         DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   INDEX `idx_match_user_id`  (`user_id`),
   INDEX `idx_match_time`     (`created_at`)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `ai_review_record` (
   `id`              BIGINT      NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -96,4 +96,4 @@ CREATE TABLE IF NOT EXISTS `ai_review_record` (
   `suggestion`      VARCHAR(50) DEFAULT NULL,
   `created_at`      DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP,
   INDEX `idx_review_app_id` (`application_id`)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
