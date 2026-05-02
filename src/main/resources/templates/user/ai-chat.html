@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head(title=${title})}"></head>
+<body>
+<nav th:replace="~{fragments/nav :: nav}"></nav>
+
+<div class="container mt-4" style="max-width: 700px;">
+    <h1 class="mb-3">养宠问答</h1>
+    <p class="text-muted">向 AI 咨询宠物饲养、护理、领养准备等通用问题。</p>
+    <p class="text-warning small">注意：AI 不提供医疗建议，如有健康问题请咨询专业兽医。</p>
+
+    <div class="mb-3">
+        <label for="questionInput" class="form-label">你的问题</label>
+        <textarea id="questionInput" class="form-control" rows="3"
+                  placeholder="例如：新领养的猫咪需要注意什么？"></textarea>
+    </div>
+    <button id="sendBtn" class="btn btn-primary mb-4">发送</button>
+    <span id="loadingSpinner" class="spinner-border text-primary ms-2 d-none" role="status"></span>
+
+    <div id="answerArea" class="d-none">
+        <div class="card">
+            <div class="card-header"><strong>AI 回答</strong></div>
+            <div class="card-body" id="answerContent"></div>
+        </div>
+    </div>
+
+    <div id="errorArea" class="alert alert-danger d-none mt-3"></div>
+</div>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+<script>
+    const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+    const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+
+    document.getElementById('sendBtn').addEventListener('click', async () => {
+        const question = document.getElementById('questionInput').value.trim();
+        if (!question) return;
+
+        const btn = document.getElementById('sendBtn');
+        const spinner = document.getElementById('loadingSpinner');
+        const answerArea = document.getElementById('answerArea');
+        const answerContent = document.getElementById('answerContent');
+        const errorArea = document.getElementById('errorArea');
+
+        btn.disabled = true;
+        spinner.classList.remove('d-none');
+        answerArea.classList.add('d-none');
+        errorArea.classList.add('d-none');
+
+        try {
+            const formData = new FormData();
+            formData.append('question', question);
+            const resp = await fetch('/user/ai-chat', {
+                method: 'POST',
+                headers: { [csrfHeader]: csrfToken },
+                body: formData
+            });
+            const data = await resp.json();
+            answerContent.textContent = data.answer;
+            answerArea.classList.remove('d-none');
+        } catch (e) {
+            errorArea.textContent = '请求失败，AI 服务可能暂时不可用。';
+            errorArea.classList.remove('d-none');
+        } finally {
+            btn.disabled = false;
+            spinner.classList.add('d-none');
+        }
+    });
+</script>
+</body>
+</html>

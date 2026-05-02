@@ -12,8 +12,12 @@ import com.petmgt.mapper.BreedMapper;
 import com.petmgt.mapper.PetImageMapper;
 import com.petmgt.mapper.PetMapper;
 import com.petmgt.mapper.UserMapper;
+import com.petmgt.dto.AiReviewResult;
 import com.petmgt.service.ApplicationService;
+import com.petmgt.service.ai.AiReviewService;
 import com.petmgt.util.SecurityUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,25 +34,30 @@ import java.util.stream.Collectors;
 @RequestMapping("/admin/applications")
 public class ApplicationController {
 
+    private static final Logger log = LoggerFactory.getLogger(ApplicationController.class);
+
     private final ApplicationMapper applicationMapper;
     private final ApplicationService applicationService;
     private final PetMapper petMapper;
     private final BreedMapper breedMapper;
     private final PetImageMapper petImageMapper;
     private final UserMapper userMapper;
+    private final AiReviewService aiReviewService;
 
     public ApplicationController(ApplicationMapper applicationMapper,
                                   ApplicationService applicationService,
                                   PetMapper petMapper,
                                   BreedMapper breedMapper,
                                   PetImageMapper petImageMapper,
-                                  UserMapper userMapper) {
+                                  UserMapper userMapper,
+                                  AiReviewService aiReviewService) {
         this.applicationMapper = applicationMapper;
         this.applicationService = applicationService;
         this.petMapper = petMapper;
         this.breedMapper = breedMapper;
         this.petImageMapper = petImageMapper;
         this.userMapper = userMapper;
+        this.aiReviewService = aiReviewService;
     }
 
     @GetMapping
@@ -130,6 +139,16 @@ public class ApplicationController {
         model.addAttribute("app", app);
         model.addAttribute("pet", pet);
         model.addAttribute("applicant", user);
+
+        if ("pending".equals(app.getStatus()) && pet != null) {
+            try {
+                AiReviewResult aiReview = aiReviewService.review(app, pet);
+                model.addAttribute("aiReview", aiReview);
+            } catch (Exception e) {
+                log.warn("AI review failed for application {}", id, e);
+            }
+        }
+
         return "admin/application-detail";
     }
 

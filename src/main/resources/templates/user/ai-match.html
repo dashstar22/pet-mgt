@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head(title=${title})}"></head>
+<body>
+<nav th:replace="~{fragments/nav :: nav}"></nav>
+
+<div class="container mt-4" style="max-width: 700px;">
+    <h1 class="mb-3">AI 宠物匹配</h1>
+    <p class="text-muted">填写以下信息，AI 将为您推荐最匹配的领养宠物。</p>
+
+    <div th:if="${warning}" class="alert alert-warning" th:text="${warning}"></div>
+
+    <form th:action="@{/user/ai-match}" method="post" th:object="${request}">
+        <div class="mb-3">
+            <label class="form-label">期望宠物类型</label>
+            <select th:field="*{petType}" class="form-select">
+                <option value="">不限</option>
+                <option value="猫">猫</option>
+                <option value="狗">狗</option>
+                <option value="兔">兔</option>
+                <option value="其他">其他</option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">期望宠物性格</label>
+            <select th:field="*{personality}" class="form-select">
+                <option value="">不限</option>
+                <option value="温顺亲人">温顺亲人</option>
+                <option value="活泼好动">活泼好动</option>
+                <option value="独立安静">独立安静</option>
+                <option value="聪明机警">聪明机警</option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">可接受的健康状态</label>
+            <select th:field="*{healthAcceptance}" class="form-select">
+                <option value="">不限</option>
+                <option value="仅健康">仅健康</option>
+                <option value="可接受轻微健康问题">可接受轻微健康问题</option>
+                <option value="可接受任何状态">可接受任何状态</option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">每日可陪伴时间</label>
+            <select th:field="*{accompanyTime}" class="form-select">
+                <option value="">不限</option>
+                <option value="少于1小时">少于 1 小时</option>
+                <option value="1-3小时">1-3 小时</option>
+                <option value="3-6小时">3-6 小时</option>
+                <option value="6小时以上">6 小时以上</option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">居住环境</label>
+            <select th:field="*{livingSpace}" class="form-select">
+                <option value="">不限</option>
+                <option value="公寓">公寓</option>
+                <option value="普通住宅">普通住宅</option>
+                <option value="带院子">带院子</option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">养宠经验</label>
+            <select th:field="*{experience}" class="form-select">
+                <option value="">不限</option>
+                <option value="无经验">无经验</option>
+                <option value="有些经验">有些经验</option>
+                <option value="经验丰富">经验丰富</option>
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary">开始匹配</button>
+        <a href="/user/ai-match/history" class="btn btn-outline-secondary">查看匹配历史</a>
+    </form>
+</div>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+</body>
+</html>

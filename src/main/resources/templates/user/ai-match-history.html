@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head(title=${title})}"></head>
+<body>
+<nav th:replace="~{fragments/nav :: nav}"></nav>
+
+<div class="container mt-4">
+    <h1 class="mb-3">AI 匹配历史</h1>
+
+    <div th:if="${page == null || page.records == null || #lists.isEmpty(page.records)}">
+        <div class="alert alert-info">暂无匹配记录。</div>
+        <a href="/user/ai-match" class="btn btn-primary">去匹配</a>
+    </div>
+
+    <table class="table table-striped" th:if="${page != null && page.records != null && !#lists.isEmpty(page.records)}">
+        <thead>
+            <tr>
+                <th>匹配时间</th>
+                <th>偏好</th>
+                <th>推荐宠物 ID</th>
+                <th>匹配分数</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="r : ${page.records}">
+                <td th:text="${#temporals.format(r.createdAt, 'yyyy-MM-dd HH:mm')}">-</td>
+                <td th:text="${r.preferenceText}">-</td>
+                <td th:text="${r.recommendedPetId}">-</td>
+                <td>
+                    <span class="badge bg-primary" th:text="${r.matchScore}">-</span>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div th:replace="~{fragments/pagination :: pagination(${page}, '/user/ai-match/history')}"></div>
+
+    <a href="/user/ai-match" class="btn btn-outline-primary mt-3">返回匹配</a>
+</div>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+</body>
+</html>
