@@ -14,7 +14,36 @@
             <a class="btn btn-primary btn-lg" href="/pets" role="button">浏览宠物</a>
         </div>
 
-        <div class="row mt-5">
+        <div class="row mt-5" th:if="${!latestPets.isEmpty()}">
+            <div class="col-12">
+                <h3 class="mb-3">最新可领养宠物</h3>
+            </div>
+            <div class="col-12 col-md-6 col-lg-3 mb-3"
+                 th:each="pet : ${latestPets}">
+                <div class="card h-100 shadow-sm">
+                    <img th:src="${pet.coverImageUrl != null ? pet.coverImageUrl : 'https://placehold.co/400x300/e9ecef/6c757d?text=No+Image'}"
+                         class="card-img-top" alt="封面"
+                         style="height: 200px; object-fit: cover;">
+                    <div class="card-body">
+                        <h6 class="card-title" th:text="${pet.name}">宠物名</h6>
+                        <p class="card-text small text-muted mb-1">
+                            <span th:text="${pet.breedName}">品种</span>
+                            <span class="mx-1">|</span>
+                            <span th:text="${pet.gender}">性别</span>
+                            <span class="mx-1">|</span>
+                            <span th:text="${pet.age} + '岁'">年龄</span>
+                        </p>
+                        <a th:href="@{/pets/{id}(id=${pet.id})}" class="btn btn-outline-primary btn-sm w-100">查看详情</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Fallback when no pets -->
+        <div class="row mt-5" th:unless="${!latestPets.isEmpty()}">
+            <div class="col-12">
+                <h3>快速入口</h3>
+            </div>
             <div class="col-md-4">
                 <div class="card">
                     <div class="card-body text-center">
