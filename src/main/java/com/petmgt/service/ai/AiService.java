@@ -29,8 +29,8 @@ public class AiService {
 
     private final RestTemplate restTemplate;
 
-    public AiService() {
-        this.restTemplate = new RestTemplate();
+    public AiService(RestTemplate aiRestTemplate) {
+        this.restTemplate = aiRestTemplate;
     }
 
     public String chat(String systemPrompt, String userMessage) {
