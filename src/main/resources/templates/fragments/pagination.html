@@ -1,0 +1,26 @@
+<div th:fragment="pagination(page, baseUrl)" xmlns:th="http://www.thymeleaf.org">
+    <th:block th:if="${page.pages > 1}">
+        <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-center">
+                <li class="page-item" th:classappend="${page.current <= 1} ? 'disabled' : ''">
+                    <a class="page-link" th:href="@{${baseUrl}(page=${page.current - 1})}"
+                       th:if="${page.current > 1}">&laquo; 上一页</a>
+                    <span class="page-link" th:unless="${page.current > 1}">&laquo; 上一页</span>
+                </li>
+                <th:block th:each="i : ${#numbers.sequence(1, page.pages)}">
+                    <th:block th:if="${i >= page.current - 2 && i <= page.current + 2}">
+                        <li class="page-item" th:classappend="${i == page.current} ? 'active' : ''">
+                            <a class="page-link" th:href="@{${baseUrl}(page=${i})}"
+                               th:text="${i}">1</a>
+                        </li>
+                    </th:block>
+                </th:block>
+                <li class="page-item" th:classappend="${page.current >= page.pages} ? 'disabled' : ''">
+                    <a class="page-link" th:href="@{${baseUrl}(page=${page.current + 1})}"
+                       th:if="${page.current < page.pages}">下一页 &raquo;</a>
+                    <span class="page-link" th:unless="${page.current < page.pages}">下一页 &raquo;</span>
+                </li>
+            </ul>
+        </nav>
+    </th:block>
+</div>
