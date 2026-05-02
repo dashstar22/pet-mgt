@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/header :: head(${title})}"></head>
+<body>
+    <div th:replace="~{fragments/nav :: nav}"></div>
+
+    <div class="container mt-4">
+        <h2 class="mb-3">宠物列表</h2>
+
+        <!-- Filter Form -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <form th:action="@{/pets}" method="get" class="row g-2">
+                    <div class="col-6 col-md-3">
+                        <label class="form-label">宠物类型</label>
+                        <select name="petType" class="form-select">
+                            <option value="">全部类型</option>
+                            <option value="猫" th:selected="${criteria.petType == '猫'}">猫</option>
+                            <option value="狗" th:selected="${criteria.petType == '狗'}">狗</option>
+                            <option value="兔" th:selected="${criteria.petType == '兔'}">兔</option>
+                        </select>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <label class="form-label">品种</label>
+                        <select name="breedId" class="form-select">
+                            <option value="">全部品种</option>
+                            <option th:each="breed : ${breeds}"
+                                    th:value="${breed.id}"
+                                    th:text="${breed.breedName}"
+                                    th:selected="${criteria.breedId == breed.id}"></option>
+                        </select>
+                    </div>
+                    <div class="col-6 col-md-2">
+                        <label class="form-label">性别</label>
+                        <select name="gender" class="form-select">
+                            <option value="">全部</option>
+                            <option value="公" th:selected="${criteria.gender == '公'}">公</option>
+                            <option value="母" th:selected="${criteria.gender == '母'}">母</option>
+                        </select>
+                    </div>
+                    <div class="col-6 col-md-2">
+                        <label class="form-label">状态</label>
+                        <select name="status" class="form-select">
+                            <option value="">全部</option>
+                            <option value="available" th:selected="${criteria.status == 'available'}">可领养</option>
+                            <option value="adopted" th:selected="${criteria.status == 'adopted'}">已领养</option>
+                            <option value="pending" th:selected="${criteria.status == 'pending'}">待审核</option>
+                        </select>
+                    </div>
+                    <div class="col-6 col-md-2">
+                        <label class="form-label">名称</label>
+                        <input type="text" name="name" class="form-control"
+                               th:value="${criteria.name}" placeholder="搜索名称">
+                    </div>
+                    <div class="col-12 d-flex justify-content-end">
+                        <button type="submit" class="btn btn-primary">筛选</button>
+                        <a th:href="@{/pets}" class="btn btn-outline-secondary ms-2">重置</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Pet Cards -->
+        <div class="row" th:if="${!petPage.records.isEmpty()}">
+            <div class="col-12 col-md-6 col-lg-4 col-xl-3 mb-3"
+                 th:each="pet : ${petPage.records}">
+                <div class="card h-100 shadow-sm">
+                    <div class="position-relative">
+                        <img th:src="${pet.coverImageUrl != null ? pet.coverImageUrl : 'https://placehold.co/400x300/e9ecef/6c757d?text=No+Image'}"
+                             class="card-img-top" alt="封面"
+                             style="height: 200px; object-fit: cover;">
+                        <span class="badge position-absolute top-0 end-0 m-2"
+                              th:classappend="${pet.status == 'available'} ? 'bg-success' : (${pet.status == 'pending'} ? 'bg-warning' : 'bg-secondary')"
+                              th:text="${pet.status == 'available'} ? '可领养' : (${pet.status == 'pending'} ? '待审核' : '已领养')">可领养</span>
+                    </div>
+                    <div class="card-body">
+                        <h6 class="card-title" th:text="${pet.name}">宠物名</h6>
+                        <p class="card-text small text-muted mb-1">
+                            <span th:text="${pet.breedName}">品种</span>
+                            <span class="mx-1">|</span>
+                            <span th:text="${pet.gender}">性别</span>
+                            <span class="mx-1">|</span>
+                            <span th:text="${pet.age} + '岁'">年龄</span>
+                        </p>
+                        <a th:href="@{/pets/{id}(id=${pet.id})}" class="btn btn-outline-primary btn-sm w-100">查看详情</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Empty State -->
+        <div class="text-center py-5" th:unless="${!petPage.records.isEmpty()}">
+            <p class="text-muted fs-5">暂无宠物信息</p>
+            <a th:href="@{/pets}" class="btn btn-outline-primary">清除筛选</a>
+        </div>
+
+        <!-- Pagination -->
+        <div th:replace="~{fragments/pagination :: pagination(${petPage}, '/pets')}"></div>
+    </div>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>
