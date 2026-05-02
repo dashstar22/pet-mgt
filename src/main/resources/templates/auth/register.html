@@ -31,12 +31,12 @@
                             <div class="mb-3">
                                 <label for="password" class="form-label">密码</label>
                                 <input type="password" class="form-control" id="password" name="password"
-                                       placeholder="请输入密码" required>
+                                       placeholder="至少6个字符" required minlength="6">
                             </div>
                             <div class="mb-3">
                                 <label for="confirmPassword" class="form-label">确认密码</label>
                                 <input type="password" class="form-control" id="confirmPassword" name="confirmPassword"
-                                       placeholder="请再次输入密码" required>
+                                       placeholder="请再次输入密码确认" required minlength="6">
                             </div>
                             <div class="d-grid">
                                 <button type="submit" class="btn btn-primary">注册</button>
@@ -53,5 +53,14 @@
     </div>
 
     <div th:replace="~{fragments/footer :: footer}"></div>
+
+<script>
+document.querySelector('form').addEventListener('submit', function(e) {
+    if (document.getElementById('password').value !== document.getElementById('confirmPassword').value) {
+        e.preventDefault();
+        alert('两次输入的密码不一致，请重新输入。');
+    }
+});
+</script>
 </body>
 </html>
