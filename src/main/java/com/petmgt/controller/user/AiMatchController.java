@@ -34,17 +34,23 @@ public class AiMatchController {
     @PostMapping
     public String match(@ModelAttribute AiMatchRequest request,
                         RedirectAttributes redirectAttributes) {
-        Long userId = SecurityUtil.getCurrentUser().getId();
-        List<AiMatchResult> results = aiMatchService.match(request, userId);
+        try {
+            Long userId = SecurityUtil.getCurrentUser().getId();
+            List<AiMatchResult> results = aiMatchService.match(request, userId);
 
-        if (results.isEmpty()) {
+            if (results.isEmpty()) {
+                redirectAttributes.addFlashAttribute("warning",
+                    "暂无可匹配的宠物，或 AI 服务暂时不可用，请稍后再试");
+                return "redirect:/user/ai-match";
+            }
+
+            redirectAttributes.addFlashAttribute("results", results);
+            return "redirect:/user/ai-match/result";
+        } catch (Exception e) {
             redirectAttributes.addFlashAttribute("warning",
-                "暂无可匹配的宠物，或 AI 服务暂时不可用，请稍后再试");
+                "匹配服务暂时不可用，请稍后再试");
             return "redirect:/user/ai-match";
         }
-
-        redirectAttributes.addFlashAttribute("results", results);
-        return "redirect:/user/ai-match/result";
     }
 
     @GetMapping("/result")
