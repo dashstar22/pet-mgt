@@ -21,7 +21,7 @@ public class AiChatService {
 
         String response = aiService.chat(systemPrompt, userQuestion);
         if (response == null) {
-            return "AI 服务暂时不可用，请稍后再试。";
+            return "AI API key 未配置，请在 application.properties 中设置 ai.deepseek.api-key 或设置环境变量 DEEPSEEK_API_KEY。";
         }
         return response;
     }

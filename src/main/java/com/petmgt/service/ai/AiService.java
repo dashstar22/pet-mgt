@@ -34,6 +34,11 @@ public class AiService {
     }
 
     public String chat(String systemPrompt, String userMessage) {
+        if (apiKey == null || apiKey.isBlank()) {
+            log.error("AI API key 未配置，请设置环境变量 DEEPSEEK_API_KEY 或在 application.properties 中配置 ai.deepseek.api-key");
+            return null;
+        }
+
         try {
             Map<String, Object> requestBody = Map.of(
                 "model", model,
@@ -58,8 +63,9 @@ public class AiService {
             return (String) message.get("content");
 
         } catch (Exception e) {
-            log.error("AI API 调用失败", e);
-            return null;
+            String rootCause = e.getCause() != null ? e.getCause().toString() : e.toString();
+            log.error("AI API 调用失败: {}", rootCause, e);
+            return "AI 调用失败: " + rootCause;
         }
     }
 }
