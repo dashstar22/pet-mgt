@@ -133,14 +133,13 @@ public class AiMatchService {
             request.getAccompanyTime(), request.getLivingSpace(), request.getExperience());
     }
 
-    public List<AiMatchRecord> getUserHistory(Long userId, int page, int size) {
+    public com.baomidou.mybatisplus.extension.plugins.pagination.Page<AiMatchRecord> getUserHistory(Long userId, int page, int size) {
         com.baomidou.mybatisplus.extension.plugins.pagination.Page<AiMatchRecord> p =
             new com.baomidou.mybatisplus.extension.plugins.pagination.Page<>(page, size);
         com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper<AiMatchRecord> wrapper =
             new com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper<>();
         wrapper.eq(AiMatchRecord::getUserId, userId)
                .orderByDesc(AiMatchRecord::getCreatedAt);
-        matchRecordMapper.selectPage(p, wrapper);
-        return p.getRecords();
+        return matchRecordMapper.selectPage(p, wrapper);
     }
 }

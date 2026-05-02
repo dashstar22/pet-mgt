@@ -1,7 +1,9 @@
 package com.petmgt.controller.user;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.petmgt.dto.AiMatchRequest;
 import com.petmgt.dto.AiMatchResult;
+import com.petmgt.entity.AiMatchRecord;
 import com.petmgt.service.ai.AiMatchService;
 import com.petmgt.util.SecurityUtil;
 import org.springframework.stereotype.Controller;
@@ -10,6 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
@@ -57,5 +60,16 @@ public class AiMatchController {
     public String matchResult(Model model) {
         model.addAttribute("title", "AI 匹配结果");
         return "user/ai-match-result";
+    }
+
+    @GetMapping("/history")
+    public String history(@RequestParam(defaultValue = "1") int page,
+                          @RequestParam(defaultValue = "10") int size,
+                          Model model) {
+        Long userId = SecurityUtil.getCurrentUser().getId();
+        Page<AiMatchRecord> recordPage = aiMatchService.getUserHistory(userId, page, size);
+        model.addAttribute("title", "匹配历史");
+        model.addAttribute("page", recordPage);
+        return "user/ai-match-history";
     }
 }
