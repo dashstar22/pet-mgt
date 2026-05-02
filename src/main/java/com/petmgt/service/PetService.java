@@ -81,6 +81,14 @@ public class PetService {
         return pets;
     }
 
+    public List<Pet> findAvailable() {
+        List<Pet> pets = petMapper.selectList(
+            new LambdaQueryWrapper<Pet>().eq(Pet::getStatus, "available"));
+        populateBreedNames(pets);
+        populateCoverImages(pets);
+        return pets;
+    }
+
     public List<PetImage> findPetImages(Long petId) {
         return petImageMapper.selectList(
             new LambdaQueryWrapper<PetImage>().eq(PetImage::getPetId, petId));
