@@ -86,16 +86,11 @@ public class AiMatchService {
     private List<AiMatchResult> parseMatchResult(String aiResponse, List<Pet> availablePets) {
         try {
             String json = aiResponse.trim();
-            if (json.startsWith("```json")) {
-                json = json.substring(7);
+            int jsonStart = json.indexOf("[");
+            int jsonEnd = json.lastIndexOf("]");
+            if (jsonStart >= 0 && jsonEnd > jsonStart) {
+                json = json.substring(jsonStart, jsonEnd + 1);
             }
-            if (json.startsWith("```")) {
-                json = json.substring(3);
-            }
-            if (json.endsWith("```")) {
-                json = json.substring(0, json.length() - 3);
-            }
-            json = json.trim();
 
             List<AiMatchResult> results = objectMapper.readValue(json,
                 new TypeReference<List<AiMatchResult>>() {});
