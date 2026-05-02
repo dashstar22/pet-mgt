@@ -13,6 +13,7 @@ import com.petmgt.mapper.PetImageMapper;
 import com.petmgt.mapper.PetMapper;
 import com.petmgt.mapper.UserMapper;
 import com.petmgt.dto.AiReviewResult;
+import com.petmgt.exception.BusinessException;
 import com.petmgt.service.ApplicationService;
 import com.petmgt.service.ai.AiReviewService;
 import com.petmgt.util.SecurityUtil;
@@ -161,7 +162,7 @@ public class ApplicationController {
             applicationService.approve(id, adminId, comment);
             redirectAttributes.addFlashAttribute("success", "申请已通过");
         } catch (IllegalArgumentException e) {
-            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            throw new BusinessException(e.getMessage());
         }
         return "redirect:/admin/applications";
     }
@@ -175,7 +176,7 @@ public class ApplicationController {
             applicationService.reject(id, adminId, reason);
             redirectAttributes.addFlashAttribute("success", "申请已拒绝");
         } catch (IllegalArgumentException e) {
-            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            throw new BusinessException(e.getMessage());
         }
         return "redirect:/admin/applications";
     }

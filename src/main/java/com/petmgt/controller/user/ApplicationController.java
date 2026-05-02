@@ -1,9 +1,11 @@
 package com.petmgt.controller.user;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.petmgt.dto.ApplicationForm;
 import com.petmgt.entity.Application;
 import com.petmgt.entity.Pet;
+import com.petmgt.exception.BusinessException;
 import com.petmgt.mapper.ApplicationMapper;
 import com.petmgt.mapper.BreedMapper;
 import com.petmgt.mapper.PetImageMapper;
@@ -18,8 +20,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 
 @Controller
 @RequestMapping("/user")
@@ -62,8 +62,7 @@ public class ApplicationController {
             redirectAttributes.addFlashAttribute("success", "申请已提交，请等待审核");
             return "redirect:/user/applications";
         } catch (IllegalArgumentException e) {
-            redirectAttributes.addFlashAttribute("error", e.getMessage());
-            return "redirect:/user/apply/" + form.getPetId();
+            throw new BusinessException(e.getMessage());
         }
     }
 
@@ -107,7 +106,7 @@ public class ApplicationController {
             applicationService.cancel(id, userId);
             redirectAttributes.addFlashAttribute("success", "申请已取消");
         } catch (IllegalArgumentException e) {
-            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            throw new BusinessException(e.getMessage());
         }
         return "redirect:/user/applications";
     }
