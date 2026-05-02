@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/header :: head(${title})}"></head>
+<body>
+    <div th:replace="~{fragments/nav :: nav}"></div>
+
+    <div class="container mt-4">
+        <div class="p-5 bg-light rounded-3">
+            <h1 class="display-4">欢迎来到 pet-mgt</h1>
+            <p class="lead">宠物领养平台 — 找到你一生的伙伴</p>
+            <hr class="my-4">
+            <p>浏览待领养宠物，提交领养申请，给流浪动物一个温暖的家。</p>
+            <a class="btn btn-primary btn-lg" href="/pets" role="button">浏览宠物</a>
+        </div>
+
+        <div class="row mt-5">
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">浏览宠物</h5>
+                        <p class="card-text">查看所有待领养宠物信息</p>
+                        <a href="/pets" class="btn btn-outline-primary">去看看</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">AI 匹配</h5>
+                        <p class="card-text">智能推荐最适合你的宠物</p>
+                        <a href="/user/ai-match" class="btn btn-outline-primary">去匹配</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">养宠问答</h5>
+                        <p class="card-text">AI 助手解答你的养宠疑问</p>
+                        <a href="/user/ai-chat" class="btn btn-outline-primary">去提问</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>
