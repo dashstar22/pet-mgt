@@ -16,6 +16,8 @@ import com.petmgt.dto.AiReviewResult;
 import com.petmgt.service.ApplicationService;
 import com.petmgt.service.ai.AiReviewService;
 import com.petmgt.util.SecurityUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,6 +33,8 @@ import java.util.stream.Collectors;
 @Controller
 @RequestMapping("/admin/applications")
 public class ApplicationController {
+
+    private static final Logger log = LoggerFactory.getLogger(ApplicationController.class);
 
     private final ApplicationMapper applicationMapper;
     private final ApplicationService applicationService;
@@ -141,7 +145,7 @@ public class ApplicationController {
                 AiReviewResult aiReview = aiReviewService.review(app, pet);
                 model.addAttribute("aiReview", aiReview);
             } catch (Exception e) {
-                // AI review failed, continue without it
+                log.warn("AI review failed for application {}", id, e);
             }
         }
 

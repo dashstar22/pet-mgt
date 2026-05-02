@@ -29,6 +29,9 @@
 
 <footer th:replace="~{fragments/footer :: footer}"></footer>
 <script>
+    const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+    const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+
     document.getElementById('sendBtn').addEventListener('click', async () => {
         const question = document.getElementById('questionInput').value.trim();
         if (!question) return;
@@ -47,7 +50,11 @@
         try {
             const formData = new FormData();
             formData.append('question', question);
-            const resp = await fetch('/user/ai-chat', { method: 'POST', body: formData });
+            const resp = await fetch('/user/ai-chat', {
+                method: 'POST',
+                headers: { [csrfHeader]: csrfToken },
+                body: formData
+            });
             const data = await resp.json();
             answerContent.textContent = data.answer;
             answerArea.classList.remove('d-none');
