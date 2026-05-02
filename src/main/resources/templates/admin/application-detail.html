@@ -66,6 +66,29 @@
         </div>
     </div>
 
+    <div class="card mb-3" th:if="${aiReview != null}">
+        <div class="card-header bg-info text-white">
+            <strong>AI 审核建议</strong>
+            <small class="ms-2">（仅供参考，不代替管理员决策）</small>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-3 text-center">
+                    <h2 th:text="${aiReview.score}" class="display-4">-</h2>
+                    <p class="text-muted">适配度评分</p>
+                    <span class="badge fs-6"
+                          th:classappend="${aiReview.suggestion == '建议通过'} ? 'bg-success' : (${aiReview.suggestion == '建议拒绝'} ? 'bg-danger' : 'bg-warning text-dark')"
+                          th:text="${aiReview.suggestion}">-</span>
+                </div>
+                <div class="col-md-9">
+                    <p><strong>优势：</strong><span th:text="${aiReview.strengths}">-</span></p>
+                    <p><strong>风险点：</strong><span th:text="${aiReview.risks}">-</span></p>
+                    <p th:if="${aiReview.notes}"><strong>补充说明：</strong><span th:text="${aiReview.notes}">-</span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="mb-4" th:if="${app.status == 'pending'}">
         <div class="row">
             <div class="col-md-6">
