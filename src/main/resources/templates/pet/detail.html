@@ -62,7 +62,7 @@
                         <div class="d-grid gap-2 mt-3">
                             <button class="btn btn-success btn-lg"
                                     th:if="${pet.status == 'available'}"
-                                    th:onclick="'location.href=\'/user/applications/apply?petId=' + ${pet.id} + '\''"
+                                    th:onclick="'location.href=\'/user/apply/' + ${pet.id} + '\''"
                                     sec:authorize="isAuthenticated()">
                                 申请领养
                             </button>

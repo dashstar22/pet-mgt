@@ -1,0 +1,45 @@
+package com.petmgt.controller.user;
+
+import com.petmgt.entity.User;
+import com.petmgt.mapper.UserMapper;
+import com.petmgt.util.SecurityUtil;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+@Controller
+@RequestMapping("/user")
+public class ProfileController {
+
+    private final UserMapper userMapper;
+
+    public ProfileController(UserMapper userMapper) {
+        this.userMapper = userMapper;
+    }
+
+    @GetMapping("/profile")
+    public String profile(Model model) {
+        User user = SecurityUtil.getCurrentUser();
+        model.addAttribute("title", "个人中心");
+        model.addAttribute("user", user);
+        return "user/profile";
+    }
+
+    @PostMapping("/profile")
+    public String updateProfile(String email, String avatarUrl, RedirectAttributes redirectAttributes) {
+        User user = SecurityUtil.getCurrentUser();
+        if (email != null && !email.isBlank()
+                && !email.matches("^[\\w.-]+@[\\w.-]+\\.[a-zA-Z]{2,}$")) {
+            redirectAttributes.addFlashAttribute("error", "邮箱格式不正确");
+            return "redirect:/user/profile";
+        }
+        user.setEmail(email);
+        user.setAvatarUrl(avatarUrl);
+        userMapper.updateById(user);
+        redirectAttributes.addFlashAttribute("success", "个人信息已更新");
+        return "redirect:/user/profile";
+    }
+}

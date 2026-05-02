@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/header :: head(${title})}"></head>
+<body>
+    <div th:replace="~{fragments/nav :: nav}"></div>
+
+    <div class="container mt-4">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/">首页</a></li>
+                <li class="breadcrumb-item"><a href="/pets">宠物列表</a></li>
+                <li class="breadcrumb-item"><a th:href="@{/pets/{id}(id=${pet.id})}" th:text="${pet.name}"></a></li>
+                <li class="breadcrumb-item active">提交申请</li>
+            </ol>
+        </nav>
+
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <span th:text="${error}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card shadow">
+                    <div class="card-body">
+                        <h3 class="card-title mb-4">领养申请 — <span th:text="${pet.name}"></span></h3>
+
+                        <form th:action="@{/user/apply}" method="post">
+                            <input type="hidden" name="petId" th:value="${pet.id}">
+
+                            <div class="mb-3">
+                                <label for="phone" class="form-label">联系电话</label>
+                                <input type="text" class="form-control" id="phone" name="phone"
+                                       placeholder="请输入联系电话" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="address" class="form-label">居住地址</label>
+                                <input type="text" class="form-control" id="address" name="address"
+                                       placeholder="请输入居住地址" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="accompanyTime" class="form-label">每日可陪伴时间</label>
+                                <select class="form-select" id="accompanyTime" name="accompanyTime" required>
+                                    <option value="">请选择</option>
+                                    <option value="少于1小时">少于1小时</option>
+                                    <option value="1-3小时">1-3小时</option>
+                                    <option value="3-6小时">3-6小时</option>
+                                    <option value="6小时以上">6小时以上</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="experience" class="form-label">养宠经验</label>
+                                <textarea class="form-control" id="experience" name="experience"
+                                          rows="3" placeholder="请描述您的养宠经验（选填）"></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="reason" class="form-label">领养理由</label>
+                                <textarea class="form-control" id="reason" name="reason"
+                                          rows="4" placeholder="请说明您想领养这只宠物的原因" required></textarea>
+                            </div>
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-success btn-lg">提交申请</button>
+                                <a th:href="@{/pets/{id}(id=${pet.id})}" class="btn btn-outline-secondary">返回详情</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

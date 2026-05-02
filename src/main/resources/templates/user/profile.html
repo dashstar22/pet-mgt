@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/header :: head(${title})}"></head>
+<body>
+    <div th:replace="~{fragments/nav :: nav}"></div>
+
+    <div class="container mt-4">
+        <h2 class="mb-4">个人中心</h2>
+
+        <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <span th:text="${success}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <span th:text="${error}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card shadow">
+                    <div class="card-body">
+                        <h5 class="card-title">基本信息</h5>
+                        <form th:action="@{/user/profile}" method="post">
+                            <div class="mb-3">
+                                <label class="form-label">用户名</label>
+                                <input type="text" class="form-control" th:value="${user.username}" disabled>
+                            </div>
+                            <div class="mb-3">
+                                <label for="email" class="form-label">邮箱</label>
+                                <input type="email" class="form-control" id="email" name="email"
+                                       th:value="${user.email}" placeholder="请输入邮箱">
+                            </div>
+                            <div class="mb-3">
+                                <label for="avatarUrl" class="form-label">头像URL</label>
+                                <input type="text" class="form-control" id="avatarUrl" name="avatarUrl"
+                                       th:value="${user.avatarUrl}" placeholder="请输入头像链接">
+                            </div>
+                            <button type="submit" class="btn btn-primary">保存修改</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card shadow">
+                    <div class="card-body">
+                        <h5 class="card-title">账号信息</h5>
+                        <table class="table">
+                            <tr>
+                                <td>用户名</td>
+                                <td th:text="${user.username}"></td>
+                            </tr>
+                            <tr>
+                                <td>角色</td>
+                                <td>
+                                    <span sec:authorize="hasRole('ADMIN')" class="badge bg-danger">管理员</span>
+                                    <span sec:authorize="hasRole('USER')" class="badge bg-primary">普通用户</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>注册时间</td>
+                                <td th:text="${#temporals.format(user.createdAt, 'yyyy-MM-dd HH:mm')}"></td>
+                            </tr>
+                            <tr>
+                                <td>状态</td>
+                                <td>
+                                    <span th:if="${user.enabled == 1}" class="badge bg-success">正常</span>
+                                    <span th:unless="${user.enabled == 1}" class="badge bg-secondary">已禁用</span>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>
