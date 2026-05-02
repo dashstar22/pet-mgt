@@ -77,4 +77,60 @@ public class ApplicationService {
             petMapper.updateById(pet);
         }
     }
+
+    @Transactional
+    public void approve(Long applicationId, Long adminId, String comment) {
+        Application app = applicationMapper.selectById(applicationId);
+        if (app == null) {
+            throw new IllegalArgumentException("申请不存在");
+        }
+        if (!"pending".equals(app.getStatus())) {
+            throw new IllegalArgumentException("该申请已审核过");
+        }
+
+        app.setStatus("approved");
+        app.setReviewedBy(adminId);
+        app.setReviewedAt(java.time.LocalDateTime.now());
+        app.setReviewComment(comment);
+        applicationMapper.updateById(app);
+
+        Pet pet = petMapper.selectById(app.getPetId());
+        pet.setStatus("adopted");
+        petMapper.updateById(pet);
+
+        applicationMapper.update(null, new com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper<Application>()
+            .eq(Application::getPetId, app.getPetId())
+            .eq(Application::getStatus, "pending")
+            .ne(Application::getId, applicationId)
+            .set(Application::getStatus, "rejected")
+            .set(Application::getReviewComment, "该宠物已被领养，系统自动拒绝")
+            .set(Application::getReviewedBy, adminId)
+            .set(Application::getReviewedAt, java.time.LocalDateTime.now()));
+    }
+
+    @Transactional
+    public void reject(Long applicationId, Long adminId, String reason) {
+        Application app = applicationMapper.selectById(applicationId);
+        if (app == null) {
+            throw new IllegalArgumentException("申请不存在");
+        }
+        if (!"pending".equals(app.getStatus())) {
+            throw new IllegalArgumentException("该申请已审核过");
+        }
+
+        app.setStatus("rejected");
+        app.setReviewedBy(adminId);
+        app.setReviewedAt(java.time.LocalDateTime.now());
+        app.setReviewComment(reason);
+        applicationMapper.updateById(app);
+
+        Long pendingCount = applicationMapper.selectCount(new LambdaQueryWrapper<Application>()
+            .eq(Application::getPetId, app.getPetId())
+            .eq(Application::getStatus, "pending"));
+        if (pendingCount == 0) {
+            Pet pet = petMapper.selectById(app.getPetId());
+            pet.setStatus("available");
+            petMapper.updateById(pet);
+        }
+    }
 }

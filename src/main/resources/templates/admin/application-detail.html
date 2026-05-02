@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head(title=${title})}"></head>
+<body>
+<nav th:replace="~{fragments/nav :: nav}"></nav>
+
+<div class="container mt-4">
+    <h1 class="mb-3">申请详情</h1>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card mb-3">
+                <div class="card-header"><strong>申请人信息</strong></div>
+                <div class="card-body">
+                    <p><strong>用户名：</strong><span th:text="${applicant?.username}">-</span></p>
+                    <p><strong>邮箱：</strong><span th:text="${applicant?.email}">-</span></p>
+                    <p><strong>电话：</strong><span th:text="${app.phone}">-</span></p>
+                    <p><strong>地址：</strong><span th:text="${app.address}">-</span></p>
+                    <p><strong>陪伴时间：</strong><span th:text="${app.accompanyTime}">-</span></p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card mb-3">
+                <div class="card-header"><strong>宠物信息</strong></div>
+                <div class="card-body">
+                    <div th:if="${app.coverImageUrl}" class="mb-2 text-center">
+                        <img th:src="@{/uploads/pets/{name}(name='thumb_' + ${app.coverImageUrl})}"
+                             class="img-thumbnail" style="max-height:200px;">
+                    </div>
+                    <p><strong>名称：</strong><span th:text="${app.petName}">-</span></p>
+                    <p><strong>品种：</strong><span th:text="${app.breedName}">-</span></p>
+                    <p><strong>状态：</strong>
+                        <span th:if="${pet?.status == 'available'}" class="badge bg-success">可领养</span>
+                        <span th:if="${pet?.status == 'pending'}" class="badge bg-warning text-dark">待审核</span>
+                        <span th:if="${pet?.status == 'adopted'}" class="badge bg-secondary">已领养</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-header"><strong>申请内容</strong></div>
+        <div class="card-body">
+            <p><strong>养宠经验：</strong></p>
+            <p th:text="${app.experience}">-</p>
+            <p><strong>申请理由：</strong></p>
+            <p th:text="${app.reason}">-</p>
+        </div>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-header"><strong>状态</strong></div>
+        <div class="card-body">
+            <p>
+                <span th:if="${app.status == 'pending'}" class="badge bg-warning text-dark fs-6">待审核</span>
+                <span th:if="${app.status == 'approved'}" class="badge bg-success fs-6">已通过</span>
+                <span th:if="${app.status == 'rejected'}" class="badge bg-danger fs-6">已拒绝</span>
+                <span th:if="${app.status == 'cancelled'}" class="badge bg-secondary fs-6">已取消</span>
+            </p>
+            <div th:if="${app.reviewComment}">
+                <p><strong>审核备注：</strong></p>
+                <p th:text="${app.reviewComment}">-</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="mb-4" th:if="${app.status == 'pending'}">
+        <div class="row">
+            <div class="col-md-6">
+                <form th:action="@{/admin/applications/{id}/approve(id=${app.id})}" method="post">
+                    <div class="mb-2">
+                        <label class="form-label">审核通过备注（可选）</label>
+                        <textarea name="comment" class="form-control" rows="2"
+                                  placeholder="通过审核的备注信息"></textarea>
+                    </div>
+                    <div class="text-muted small mb-2">
+                        <strong>注意：</strong>通过后将自动拒绝该宠物的其他待审核申请，并将宠物状态设为"已领养"。
+                    </div>
+                    <button type="submit" class="btn btn-success">通过申请</button>
+                </form>
+            </div>
+            <div class="col-md-6">
+                <form th:action="@{/admin/applications/{id}/reject(id=${app.id})}" method="post">
+                    <div class="mb-2">
+                        <label class="form-label">拒绝原因（必填）</label>
+                        <textarea name="reason" class="form-control" rows="2" required
+                                  placeholder="请填写拒绝原因"></textarea>
+                    </div>
+                    <div class="text-muted small mb-2">
+                        <strong>注意：</strong>拒绝后如无其他待审核申请，宠物将恢复为"可领养"状态。
+                    </div>
+                    <button type="submit" class="btn btn-danger">拒绝申请</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <a href="/admin/applications" class="btn btn-secondary">返回列表</a>
+</div>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
