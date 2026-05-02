@@ -17,11 +17,12 @@ public class SecurityConfig {
         http
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/", "/pets/**", "/login", "/register",
-                                 "/uploads/**", "/css/**", "/js/**", "/images/**")
+                                 "/uploads/**", "/css/**", "/js/**", "/images/**",
+                                 "/error")
                     .permitAll()
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 .requestMatchers("/user/**").authenticated()
-                .anyRequest().authenticated()
+                .anyRequest().permitAll()
             )
             .formLogin(form -> form
                 .loginPage("/login")
