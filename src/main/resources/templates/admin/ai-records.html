@@ -20,6 +20,7 @@
                 <th>偏好</th>
                 <th>推荐宠物 ID</th>
                 <th>匹配分数</th>
+                <th style="width:180px">操作</th>
             </tr>
         </thead>
         <tbody>
@@ -30,6 +31,18 @@
                 <td th:text="${r.recommendedPetId}">-</td>
                 <td>
                     <span class="badge bg-primary" th:text="${r.matchScore}">-</span>
+                </td>
+                <td>
+                    <button class="btn btn-outline-danger btn-sm me-1"
+                            th:attr="onclick='deleteRecord(' + ${r.id} + ')'">
+                        删除
+                    </button>
+                    <form method="post"
+                          th:action="@{/admin/ai-records/clear/{id}(id=${r.userId})}"
+                          style="display:inline"
+                          onsubmit="return confirm('确定要清空该用户的所有匹配记录吗？')">
+                        <button type="submit" class="btn btn-outline-warning btn-sm">清空用户</button>
+                    </form>
                 </td>
             </tr>
         </tbody>
@@ -43,5 +56,19 @@
 
 <footer th:replace="~{fragments/footer :: footer}"></footer>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+function deleteRecord(id) {
+    if (!confirm('确定要删除这条匹配记录吗？')) return;
+    const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+    const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+    fetch('/admin/ai-records/' + id, {
+        method: 'DELETE',
+        headers: { [csrfHeader]: csrfToken }
+    }).then(function(resp) {
+        if (resp.ok) location.reload();
+        else alert('删除失败，请稍后再试');
+    });
+}
+</script>
 </body>
 </html>

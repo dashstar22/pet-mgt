@@ -5,33 +5,49 @@
 <nav th:replace="~{fragments/nav :: nav}"></nav>
 
 <div class="container mt-4">
-    <h1 class="mb-3">AI 匹配历史</h1>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1 class="mb-0">AI 匹配历史</h1>
+        <form th:if="${page != null && page.records != null && !#lists.isEmpty(page.records)}"
+              method="post" th:action="@{/user/ai-match/history/clear}"
+              onsubmit="return confirm('确定要清空所有匹配历史吗？此操作不可恢复。')">
+            <button type="submit" class="btn btn-danger btn-sm">清空历史</button>
+        </form>
+    </div>
 
     <div th:if="${page == null || page.records == null || #lists.isEmpty(page.records)}">
         <div class="alert alert-info">暂无匹配记录。</div>
         <a href="/user/ai-match" class="btn btn-primary">去匹配</a>
     </div>
 
-    <table class="table table-striped" th:if="${page != null && page.records != null && !#lists.isEmpty(page.records)}">
-        <thead>
-            <tr>
-                <th>匹配时间</th>
-                <th>偏好</th>
-                <th>推荐宠物 ID</th>
-                <th>匹配分数</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr th:each="r : ${page.records}">
-                <td th:text="${#temporals.format(r.createdAt, 'yyyy-MM-dd HH:mm')}">-</td>
-                <td th:text="${r.preferenceText}">-</td>
-                <td th:text="${r.recommendedPetId}">-</td>
-                <td>
-                    <span class="badge bg-primary" th:text="${r.matchScore}">-</span>
-                </td>
-            </tr>
-        </tbody>
-    </table>
+    <div th:if="${page != null && page.records != null && !#lists.isEmpty(page.records)}">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>匹配时间</th>
+                    <th>偏好</th>
+                    <th>推荐宠物 ID</th>
+                    <th>匹配分数</th>
+                    <th style="width:80px">操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="r : ${page.records}">
+                    <td th:text="${#temporals.format(r.createdAt, 'yyyy-MM-dd HH:mm')}">-</td>
+                    <td th:text="${r.preferenceText}">-</td>
+                    <td th:text="${r.recommendedPetId}">-</td>
+                    <td>
+                        <span class="badge bg-primary" th:text="${r.matchScore}">-</span>
+                    </td>
+                    <td>
+                        <button class="btn btn-outline-danger btn-sm"
+                                th:attr="onclick='deleteRecord(' + ${r.id} + ')'">
+                            删除
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 
     <div th:replace="~{fragments/pagination :: pagination(${page}, '/user/ai-match/history')}"></div>
 
@@ -39,5 +55,19 @@
 </div>
 
 <footer th:replace="~{fragments/footer :: footer}"></footer>
+<script>
+function deleteRecord(id) {
+    if (!confirm('确定要删除这条匹配记录吗？')) return;
+    const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+    const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+    fetch('/user/ai-match/history/' + id, {
+        method: 'DELETE',
+        headers: { [csrfHeader]: csrfToken }
+    }).then(function(resp) {
+        if (resp.ok) location.reload();
+        else alert('删除失败，请稍后再试');
+    });
+}
+</script>
 </body>
 </html>

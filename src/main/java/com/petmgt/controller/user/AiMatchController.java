@@ -8,8 +8,11 @@ import com.petmgt.service.ai.AiMatchService;
 import com.petmgt.util.SecurityUtil;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -71,5 +74,19 @@ public class AiMatchController {
         model.addAttribute("title", "匹配历史");
         model.addAttribute("page", recordPage);
         return "user/ai-match-history";
+    }
+
+    @PostMapping("/history/clear")
+    public String clearHistory(RedirectAttributes redirectAttributes) {
+        Long userId = SecurityUtil.getCurrentUser().getId();
+        aiMatchService.deleteUserHistory(userId);
+        redirectAttributes.addFlashAttribute("success", "匹配历史已清空");
+        return "redirect:/user/ai-match/history";
+    }
+
+    @DeleteMapping("/history/{id}")
+    public ResponseEntity<Void> deleteRecord(@PathVariable Long id) {
+        aiMatchService.deleteById(id);
+        return ResponseEntity.ok().build();
     }
 }

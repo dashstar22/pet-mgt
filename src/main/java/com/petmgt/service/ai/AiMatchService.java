@@ -1,5 +1,6 @@
 package com.petmgt.service.ai;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.petmgt.dto.AiMatchRequest;
@@ -131,6 +132,16 @@ public class AiMatchService {
         return String.format("类型=%s, 性格=%s, 健康=%s, 时间=%s, 环境=%s, 经验=%s",
             request.getPetType(), request.getPersonality(), request.getHealthAcceptance(),
             request.getAccompanyTime(), request.getLivingSpace(), request.getExperience());
+    }
+
+    public void deleteUserHistory(Long userId) {
+        LambdaQueryWrapper<AiMatchRecord> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(AiMatchRecord::getUserId, userId);
+        matchRecordMapper.delete(wrapper);
+    }
+
+    public void deleteById(Long id) {
+        matchRecordMapper.deleteById(id);
     }
 
     public com.baomidou.mybatisplus.extension.plugins.pagination.Page<AiMatchRecord> getUserHistory(Long userId, int page, int size) {
