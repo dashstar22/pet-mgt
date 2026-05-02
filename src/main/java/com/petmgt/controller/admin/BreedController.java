@@ -74,9 +74,10 @@ public class BreedController {
     }
 
     @PostMapping("/{id}/delete")
-    public String delete(@PathVariable Long id) {
+    public String delete(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {
             breedService.delete(id);
+            redirectAttributes.addFlashAttribute("success", "品种已删除");
         } catch (IllegalArgumentException e) {
             throw new BusinessException(e.getMessage());
         }

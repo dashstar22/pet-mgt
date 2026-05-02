@@ -9,6 +9,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/user")
@@ -29,7 +30,7 @@ public class ProfileController {
     }
 
     @PostMapping("/profile")
-    public String updateProfile(String email, String avatarUrl) {
+    public String updateProfile(String email, String avatarUrl, RedirectAttributes redirectAttributes) {
         if (email != null && !email.isBlank()
                 && !email.matches("^[\\w.-]+@[\\w.-]+\\.[a-zA-Z]{2,}$")) {
             throw new BusinessException("邮箱格式不正确");
@@ -38,6 +39,7 @@ public class ProfileController {
         user.setEmail(email);
         user.setAvatarUrl(avatarUrl);
         userMapper.updateById(user);
+        redirectAttributes.addFlashAttribute("success", "个人信息已更新");
         return "redirect:/user/profile";
     }
 }
