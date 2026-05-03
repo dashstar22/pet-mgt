@@ -67,7 +67,7 @@
                  th:each="pet : ${petPage.records}">
                 <div class="card h-100">
                     <div class="position-relative">
-                        <img th:src="${pet.coverImageUrl != null ? @{/uploads/pets/{name}(name=${pet.coverImageUrl})} : 'https://placehold.co/400x300/e9ecef/6c757d?text=No+Image'}"
+                        <img th:src="${pet.coverImageUrl != null ? '/uploads/pets/' + pet.coverImageUrl : 'https://placehold.co/400x300/e9ecef/6c757d?text=No+Image'}"
                              class="card-img-top" alt="封面"
                              style="height: 200px; object-fit: cover;">
                         <span class="badge position-absolute top-0 end-0 m-2"
