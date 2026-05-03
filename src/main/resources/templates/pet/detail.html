@@ -20,7 +20,7 @@
                 <div class="card">
                     <div class="card-body text-center">
                         <img id="mainImage"
-                             th:src="${images != null && !images.isEmpty() ? images[0].imageUrl : 'https://placehold.co/600x400/e9ecef/6c757d?text=No+Image'}"
+                             th:src="${images != null && !images.isEmpty() ? @{/uploads/pets/{name}(name=images[0].imageUrl)} : 'https://placehold.co/600x400/e9ecef/6c757d?text=No+Image'}"
                              class="img-fluid rounded mb-3" alt="宠物图片"
                              style="max-height: 400px; object-fit: contain; cursor: pointer;"
                              data-bs-toggle="modal" data-bs-target="#imageModal">
@@ -29,7 +29,7 @@
                 <!-- Thumbnails -->
                 <div class="d-flex flex-wrap gap-2 mt-2" th:if="${images != null && images.size() > 1}">
                     <img th:each="image, iter : ${images}"
-                         th:src="${image.imageUrl}"
+                         th:src="@{/uploads/pets/{name}(name=${image.imageUrl})}"
                          class="img-thumbnail" alt="缩略图"
                          style="width: 80px; height: 80px; object-fit: cover; cursor: pointer;"
                          th:classappend="${iter.index == 0 ? 'border-primary' : ''}"
