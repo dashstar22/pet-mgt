@@ -18,9 +18,10 @@
         </div>
 
         <!-- Empty state -->
-        <div th:if="${page.records == null || page.records.isEmpty()}" class="text-center py-5">
+        <div th:if="${page.records == null || page.records.isEmpty()}" class="empty-state">
+            <div class="icon">📋</div>
             <p class="text-muted fs-4">暂无申请记录</p>
-            <a href="/pets" class="btn btn-primary">去看看待领养宠物</a>
+            <a href="/pets" class="btn btn-outline-primary">去看看待领养宠物</a>
         </div>
 
         <!-- Application list -->
