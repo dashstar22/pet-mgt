@@ -6,69 +6,77 @@
     <div th:replace="~{fragments/nav :: nav}"></div>
 
     <div class="container mt-4">
-        <div class="p-5 bg-light rounded-3">
-            <h1 class="display-4">欢迎来到 pet-mgt</h1>
-            <p class="lead">宠物领养平台 — 找到你一生的伙伴</p>
-            <hr class="my-4">
-            <p>浏览待领养宠物，提交领养申请，给流浪动物一个温暖的家。</p>
-            <a class="btn btn-primary btn-lg" href="/pets" role="button">浏览宠物</a>
-        </div>
-
-        <div class="row mt-5" th:if="${!latestPets.isEmpty()}">
-            <div class="col-12">
-                <h3 class="mb-3">最新可领养宠物</h3>
-            </div>
-            <div class="col-12 col-md-6 col-lg-3 mb-3"
-                 th:each="pet : ${latestPets}">
-                <div class="card h-100 shadow-sm">
-                    <img th:src="${pet.coverImageUrl != null ? pet.coverImageUrl : 'https://placehold.co/400x300/e9ecef/6c757d?text=No+Image'}"
-                         class="card-img-top" alt="封面"
-                         style="height: 200px; object-fit: cover;">
-                    <div class="card-body">
-                        <h6 class="card-title" th:text="${pet.name}">宠物名</h6>
-                        <p class="card-text small text-muted mb-1">
-                            <span th:text="${pet.breedName}">品种</span>
-                            <span class="mx-1">|</span>
-                            <span th:text="${pet.gender}">性别</span>
-                            <span class="mx-1">|</span>
-                            <span th:text="${pet.age} + '岁'">年龄</span>
-                        </p>
-                        <a th:href="@{/pets/{id}(id=${pet.id})}" class="btn btn-outline-primary btn-sm w-100">查看详情</a>
-                    </div>
-                </div>
+        <!-- Hero Section -->
+        <div class="hero-section">
+            <div class="hero-title">🐾 找到你一生的伙伴</div>
+            <div class="hero-subtitle">智能匹配 · 一键申请 · 给流浪动物一个温暖的家</div>
+            <div class="hero-buttons">
+                <a href="/pets" class="btn btn-light btn-lg" style="color: var(--pet-primary); font-weight: 700; border-radius: var(--pet-radius-full);">
+                    🐾 浏览宠物
+                </a>
+                <a sec:authorize="isAuthenticated()" href="/user/ai-match" class="btn btn-lg" style="background: rgba(255,255,255,0.2); color: white; border-radius: var(--pet-radius-full); font-weight: 600;">
+                    ✨ AI 匹配
+                </a>
             </div>
         </div>
 
-        <!-- Fallback when no pets -->
-        <div class="row mt-5" th:unless="${!latestPets.isEmpty()}">
-            <div class="col-12">
-                <h3>快速入口</h3>
-            </div>
-            <div class="col-md-4">
-                <div class="card">
-                    <div class="card-body text-center">
-                        <h5 class="card-title">浏览宠物</h5>
-                        <p class="card-text">查看所有待领养宠物信息</p>
-                        <a href="/pets" class="btn btn-outline-primary">去看看</a>
+        <!-- Latest Pets -->
+        <div th:if="${!latestPets.isEmpty()}">
+            <h3 class="mb-3">最新可领养宠物</h3>
+            <div class="row">
+                <div class="col-12 col-md-6 col-lg-3 mb-3 fade-in-up"
+                     th:each="pet : ${latestPets}">
+                    <div class="card h-100">
+                        <div class="position-relative">
+                            <img th:src="${pet.coverImageUrl != null ? pet.coverImageUrl : 'https://placehold.co/400x300/e9ecef/6c757d?text=No+Image'}"
+                                 class="card-img-top" alt="封面"
+                                 style="height: 200px; object-fit: cover;">
+                            <span class="badge position-absolute top-0 end-0 m-2"
+                                  th:classappend="${pet.status == 'available' ? 'badge-available' : ''}"
+                                  th:with="statusClass=${pet.status == 'available' ? 'bg-success' : (pet.status == 'pending' ? 'bg-warning' : 'bg-secondary')}"
+                                  th:class="${statusClass}"
+                                  th:text="${pet.status == 'available' ? '可领养' : (pet.status == 'pending' ? '待审核' : '已领养')}">可领养</span>
+                        </div>
+                        <div class="card-body">
+                            <h6 class="card-title" th:text="${pet.name}">宠物名</h6>
+                            <p class="card-text small text-muted mb-1">
+                                <span th:text="${pet.breedName}">品种</span>
+                                <span class="mx-1">|</span>
+                                <span th:text="${pet.gender}">性别</span>
+                                <span class="mx-1">|</span>
+                                <span th:text="${pet.age} + '岁'">年龄</span>
+                            </p>
+                            <a th:href="@{/pets/{id}(id=${pet.id})}" class="btn btn-outline-primary btn-sm w-100">查看详情</a>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="col-md-4">
-                <div class="card">
-                    <div class="card-body text-center">
-                        <h5 class="card-title">AI 匹配</h5>
-                        <p class="card-text">智能推荐最适合你的宠物</p>
-                        <a href="/user/ai-match" class="btn btn-outline-primary">去匹配</a>
-                    </div>
+        </div>
+
+        <!-- Quick Links (fallback when no pets) -->
+        <div th:unless="${!latestPets.isEmpty()}">
+            <h3>快速入口</h3>
+            <div class="row mt-3">
+                <div class="col-md-4 mb-3">
+                    <a href="/pets" class="card category-card" style="background: #F5F3FF;">
+                        <div class="emoji">🐾</div>
+                        <div class="label">浏览宠物</div>
+                        <div class="count">查看所有待领养宠物</div>
+                    </a>
                 </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card">
-                    <div class="card-body text-center">
-                        <h5 class="card-title">养宠问答</h5>
-                        <p class="card-text">AI 助手解答你的养宠疑问</p>
-                        <a href="/user/ai-chat" class="btn btn-outline-primary">去提问</a>
-                    </div>
+                <div class="col-md-4 mb-3">
+                    <a href="/user/ai-match" class="card category-card" style="background: #FDF2F8;">
+                        <div class="emoji">✨</div>
+                        <div class="label">AI 匹配</div>
+                        <div class="count">智能推荐最适合你的宠物</div>
+                    </a>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <a href="/user/ai-chat" class="card category-card" style="background: #FCE7F3;">
+                        <div class="emoji">💬</div>
+                        <div class="label">养宠问答</div>
+                        <div class="count">AI 助手解答你的养宠疑问</div>
+                    </a>
                 </div>
             </div>
         </div>
