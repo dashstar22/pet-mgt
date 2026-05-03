@@ -1,0 +1,103 @@
+<div style="max-width: 960px; margin: 0 auto;">
+  <h2>Section 1: Design System 设计系统</h2>
+  <p class="subtitle">浆果跳跳糖 · 活泼趣味风</p>
+
+  <div class="section">
+    <h3>CSS Variables 变量体系</h3>
+    <div class="mockup">
+      <div class="mockup-header">:root 变量定义</div>
+      <div class="mockup-body">
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+          <div>
+            <div class="label">主色系</div>
+            <div style="display:flex; gap: 8px; flex-wrap: wrap;">
+              <div style="width:48px;height:48px;border-radius:12px;background:#7C3AED;" title="Primary"></div>
+              <div style="width:48px;height:48px;border-radius:12px;background:#F472B6;" title="Accent"></div>
+              <div style="width:48px;height:48px;border-radius:12px;background:#FBBF24;" title="Gold"></div>
+              <div style="width:48px;height:48px;border-radius:12px;background:#A855F7;" title="Primary Light"></div>
+              <div style="width:48px;height:48px;border-radius:12px;background:#F9A8D4;" title="Accent Light"></div>
+            </div>
+          </div>
+          <div>
+            <div class="label">中性色</div>
+            <div style="display:flex; gap: 8px; flex-wrap: wrap;">
+              <div style="width:48px;height:48px;border-radius:12px;background:#1E1B4B;border:1px solid #333;" title="Darkest"></div>
+              <div style="width:48px;height:48px;border-radius:12px;background:#334155;" title="Text"></div>
+              <div style="width:48px;height:48px;border-radius:12px;background:#94A3B8;" title="Muted"></div>
+              <div style="width:48px;height:48px;border-radius:12px;background:#F8FAFC;" title="Bg Light"></div>
+              <div style="width:48px;height:48px;border-radius:12px;background:#F1F5F9;" title="Bg Darker"></div>
+            </div>
+          </div>
+        </div>
+        <div style="background: #1E1B4B; border-radius: 12px; padding: 16px; margin-top: 16px; font-family: monospace; font-size: 12px; color: #E2E8F0; line-height: 1.8;">
+          --color-primary: #7C3AED;<br>
+          --color-accent: #F472B6;<br>
+          --color-gold: #FBBF24;<br>
+          --color-dark: #1E1B4B;<br>
+          --color-text: #334155;<br>
+          --color-muted: #94A3B8;<br>
+          --color-bg: #F8FAFC;<br>
+          --radius-sm: 8px;<br>
+          --radius-md: 12px;<br>
+          --radius-lg: 16px;<br>
+          --radius-xl: 24px;<br>
+          --radius-full: 9999px;<br>
+          --shadow-sm: 0 2px 8px rgba(124,58,237,0.08);<br>
+          --shadow-md: 0 4px 20px rgba(124,58,237,0.12);<br>
+          --shadow-lg: 0 8px 32px rgba(124,58,237,0.16);<br>
+          --transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h3>排版体系</h3>
+    <div class="mockup">
+      <div class="mockup-header">Typography Scale</div>
+      <div class="mockup-body">
+        <div style="background: #fff; border-radius: 12px; padding: 24px;">
+          <div style="font-size:36px;font-weight:800;color:#1E1B4B;margin-bottom:4px;">.display-4 → 36px/800</div>
+          <div style="font-size:28px;font-weight:700;color:#1E1B4B;margin-bottom:4px;">h2 → 28px/700</div>
+          <div style="font-size:22px;font-weight:700;color:#1E1B4B;margin-bottom:4px;">h3 → 22px/700</div>
+          <div style="font-size:18px;font-weight:600;color:#334155;margin-bottom:4px;">.lead → 18px/400</div>
+          <div style="font-size:15px;font-weight:400;color:#334155;margin-bottom:4px;">body → 15px/400</div>
+          <div style="font-size:13px;font-weight:400;color:#94A3B8;">small → 13px/400</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h3>按钮体系</h3>
+    <div class="mockup">
+      <div class="mockup-header">Button Variants</div>
+      <div class="mockup-body">
+        <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:center;">
+          <div style="background:linear-gradient(135deg,#7C3AED,#F472B6);color:white;padding:10px 24px;border-radius:50px;font-weight:600;font-size:14px;">Primary 渐变按钮</div>
+          <div style="border:2px solid #7C3AED;color:#7C3AED;padding:10px 24px;border-radius:50px;font-weight:600;font-size:14px;">Outline 描边</div>
+          <div style="background:#F5F3FF;color:#7C3AED;padding:10px 24px;border-radius:50px;font-weight:600;font-size:14px;">Ghost 轻量</div>
+          <div style="background:#1E1B4B;color:white;padding:10px 24px;border-radius:50px;font-weight:600;font-size:14px;">Dark 深色</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h3>状态标签</h3>
+    <div class="mockup">
+      <div class="mockup-header">Badge Variants</div>
+      <div class="mockup-body">
+        <div style="display:flex; gap:12px;">
+          <span style="background:#ECFDF5;color:#059669;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600;">可领养</span>
+          <span style="background:#FEF3C7;color:#D97706;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600;">待审核</span>
+          <span style="background:#F1F5F9;color:#64748B;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600;">已领养</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <p style="margin-top: 24px; padding: 16px; background: #F5F3FF; border-radius: 12px; color: #7C3AED; font-size: 14px;">
+    以上是所有页面共享的基础设计系统。这个部分确定了，后面的组件就都基于这些变量来设计。
+  </p>
+</div>
