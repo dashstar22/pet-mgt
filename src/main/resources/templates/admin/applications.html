@@ -72,7 +72,7 @@
                     <td>
                         <a th:href="@{/admin/applications/{id}(id=${app.id})}" class="btn btn-sm btn-outline-primary me-1">查看详情</a>
                         <form th:action="@{/admin/applications/{id}/delete(id=${app.id})}" method="post"
-                              th:if="${app.status != 'approved'}" style="display:inline;">
+                              style="display:inline;">
                             <button type="submit" class="btn btn-sm btn-outline-danger"
                                     onclick="return confirm('确定要删除此申请记录吗？此操作不可恢复。')">删除</button>
                         </form>

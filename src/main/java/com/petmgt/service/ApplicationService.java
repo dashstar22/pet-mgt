@@ -136,9 +136,6 @@ public class ApplicationService {
         if (app == null) {
             throw new IllegalArgumentException("申请不存在");
         }
-        if ("approved".equals(app.getStatus())) {
-            throw new IllegalArgumentException("已通过的申请不可删除");
-        }
 
         Long petId = app.getPetId();
         String status = app.getStatus();
