@@ -20,6 +20,7 @@
                 <div class="card h-100">
                     <img th:if="${r.coverImageUrl}"
                          th:src="@{/uploads/pets/{name}(name='thumb_' + ${r.coverImageUrl})}"
+                         onerror="this.onerror=null;this.src=this.src.replace('thumb_','');"
                          class="card-img-top" style="height:200px;object-fit:cover;">
                     <div class="card-img-top bg-light d-flex align-items-center justify-content-center"
                          th:if="${r.coverImageUrl == null}"

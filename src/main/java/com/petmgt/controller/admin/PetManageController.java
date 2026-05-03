@@ -20,12 +20,16 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.io.IOException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.List;
 
 @Controller
 @RequestMapping("/admin/pets")
 public class PetManageController {
+
+    private static final Logger log = LoggerFactory.getLogger(PetManageController.class);
 
     private final PetMapper petMapper;
     private final BreedMapper breedMapper;
@@ -90,8 +94,8 @@ public class PetManageController {
 
     @PostMapping("/create")
     public String create(Pet pet,
-                         @RequestParam(required = false) List<MultipartFile> images,
-                         @RequestParam(required = false) Integer coverIndex,
+                         @RequestParam(value = "images", required = false) List<MultipartFile> images,
+                         @RequestParam(value = "coverIndex", required = false) Integer coverIndex,
                          RedirectAttributes redirectAttributes) {
         pet.setStatus("available");
         pet.setCreatedBy(SecurityUtil.getCurrentUser().getId());
@@ -123,9 +127,9 @@ public class PetManageController {
 
     @PostMapping("/{id}/edit")
     public String edit(@PathVariable Long id, Pet pet,
-                       @RequestParam(required = false) List<MultipartFile> newImages,
-                       @RequestParam(required = false) Integer coverIndex,
-                       @RequestParam(required = false) List<Long> deleteImageIds,
+                       @RequestParam(value = "images", required = false) List<MultipartFile> images,
+                       @RequestParam(value = "coverIndex", required = false) Integer coverIndex,
+                       @RequestParam(value = "deleteImageIds", required = false) List<Long> deleteImageIds,
                        RedirectAttributes redirectAttributes) {
         pet.setId(id);
         petMapper.updateById(pet);
@@ -138,8 +142,8 @@ public class PetManageController {
                 }
             }
         }
-        if (newImages != null && !newImages.isEmpty()) {
-            saveImages(id, newImages, coverIndex);
+        if (images != null && !images.isEmpty()) {
+            saveImages(id, images, coverIndex);
         }
         redirectAttributes.addFlashAttribute("success", "宠物更新成功");
         return "redirect:/admin/pets";
@@ -169,8 +173,8 @@ public class PetManageController {
                 petImage.setImageUrl(fileName);
                 petImage.setIsCover(coverIndex != null && coverIndex == i + 1 ? 1 : 0);
                 petImageMapper.insert(petImage);
-            } catch (IOException e) {
-                // skip bad files
+            } catch (Exception e) {
+                log.error("Failed to save image for pet {}: {}", petId, e.getMessage(), e);
             }
         }
 

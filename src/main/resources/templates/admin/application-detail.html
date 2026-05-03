@@ -26,6 +26,7 @@
                 <div class="card-body">
                     <div th:if="${app.coverImageUrl}" class="mb-2 text-center">
                         <img th:src="@{/uploads/pets/{name}(name='thumb_' + ${app.coverImageUrl})}"
+                             onerror="this.onerror=null;this.src=this.src.replace('thumb_','');"
                              class="img-thumbnail" style="max-height:200px;">
                     </div>
                     <p><strong>名称：</strong><span th:text="${app.petName}">-</span></p>

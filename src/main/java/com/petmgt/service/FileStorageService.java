@@ -5,8 +5,9 @@ import com.petmgt.util.FileUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
@@ -14,10 +15,13 @@ import java.util.UUID;
 @Service
 public class FileStorageService {
 
-    private final FileUploadConfig config;
+    private final Path uploadDir;
+    private final List<String> allowedExtensions;
 
     public FileStorageService(FileUploadConfig config) {
-        this.config = config;
+        Path projectRoot = FileUtil.findProjectRoot();
+        this.uploadDir = projectRoot.resolve(config.getUploadDir()).normalize();
+        this.allowedExtensions = Arrays.asList(config.getAllowedExtensions().split(","));
     }
 
     public String store(MultipartFile file) throws IOException {
@@ -31,9 +35,8 @@ public class FileStorageService {
         }
 
         String extension = getExtension(originalFilename).toLowerCase();
-        List<String> allowed = Arrays.asList(config.getAllowedExtensions().split(","));
-        if (!allowed.contains(extension)) {
-            throw new IllegalArgumentException("仅支持以下格式: " + config.getAllowedExtensions());
+        if (!allowedExtensions.contains(extension)) {
+            throw new IllegalArgumentException("仅支持以下格式: " + String.join(",", allowedExtensions));
         }
 
         if (file.getSize() > 2 * 1024 * 1024) {
@@ -41,18 +44,18 @@ public class FileStorageService {
         }
 
         String newFileName = UUID.randomUUID().toString() + "." + extension;
-        File uploadDir = new File(config.getUploadDir());
-        if (!uploadDir.exists()) {
-            uploadDir.mkdirs();
+
+        if (!Files.exists(uploadDir)) {
+            Files.createDirectories(uploadDir);
         }
 
-        File dest = new File(uploadDir, newFileName);
-        file.transferTo(dest);
+        Path dest = uploadDir.resolve(newFileName);
+        file.transferTo(dest.toFile());
 
         try {
-            FileUtil.createThumbnail(dest.getAbsolutePath());
-        } catch (IOException e) {
-            // thumbnail failure doesn't block upload
+            FileUtil.createThumbnail(dest.toAbsolutePath().toString());
+        } catch (Exception e) {
+            System.err.println("WARN: Thumbnail creation failed for " + dest + ": " + e.getMessage());
         }
 
         return newFileName;
@@ -60,11 +63,14 @@ public class FileStorageService {
 
     public void delete(String fileName) {
         if (fileName == null || fileName.isEmpty()) return;
-        File dir = new File(config.getUploadDir());
-        File file = new File(dir, fileName);
-        if (file.exists()) file.delete();
-        File thumb = new File(dir, "thumb_" + fileName);
-        if (thumb.exists()) thumb.delete();
+        try {
+            Path file = uploadDir.resolve(fileName);
+            Files.deleteIfExists(file);
+            Path thumb = uploadDir.resolve("thumb_" + fileName);
+            Files.deleteIfExists(thumb);
+        } catch (IOException e) {
+            // file may already be gone
+        }
     }
 
     private String getExtension(String filename) {
