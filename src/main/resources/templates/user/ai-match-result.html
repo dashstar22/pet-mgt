@@ -13,7 +13,10 @@
     </div>
 
     <div th:if="${results != null && !#lists.isEmpty(results)}">
-        <p class="text-muted mb-3">AI 根据您的偏好推荐以下宠物：</p>
+        <p class="text-muted mb-3">
+            <span th:if="${aiUsed}">AI 根据您的偏好推荐以下宠物：</span>
+            <span th:unless="${aiUsed}">根据您的偏好为您匹配以下宠物（AI 服务暂时不可用，当前为本地规则匹配）：</span>
+        </p>
 
         <div class="row">
             <div class="col-md-6 col-lg-4 mb-3" th:each="r : ${results}">
@@ -41,7 +44,7 @@
                     <div class="card-footer d-flex justify-content-between">
                         <a th:href="@{/pets/{id}(id=${r.petId})}" class="btn btn-outline-primary btn-sm">查看详情</a>
                         <a th:if="${r.suggestApply}"
-                           th:href="@{/user/applications/apply/{petId}(petId=${r.petId})}"
+                           th:href="@{/user/apply/{petId}(petId=${r.petId})}"
                            class="btn btn-success btn-sm">申请领养</a>
                     </div>
                 </div>

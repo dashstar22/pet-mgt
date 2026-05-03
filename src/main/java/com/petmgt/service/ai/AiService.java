@@ -35,7 +35,7 @@ public class AiService {
 
     public String chat(String systemPrompt, String userMessage) {
         if (apiKey == null || apiKey.isBlank()) {
-            log.error("AI API key 未配置，请设置环境变量 DEEPSEEK_API_KEY 或在 application.properties 中配置 ai.deepseek.api-key");
+            log.error("AI API key 未配置");
             return null;
         }
 
@@ -55,17 +55,24 @@ public class AiService {
 
             HttpEntity<Map<String, Object>> request = new HttpEntity<>(requestBody, headers);
 
+            log.info("正在调用 DeepSeek API, model={}", model);
             ResponseEntity<Map> response = restTemplate.postForEntity(endpoint, request, Map.class);
+            log.info("DeepSeek API 响应状态码: {}", response.getStatusCode());
 
             @SuppressWarnings("unchecked")
             List<Map<String, Object>> choices = (List<Map<String, Object>>) response.getBody().get("choices");
+            if (choices == null || choices.isEmpty()) {
+                log.warn("DeepSeek API 返回空的 choices, body={}", response.getBody());
+                return null;
+            }
             Map<String, Object> message = (Map<String, Object>) choices.get(0).get("message");
             return (String) message.get("content");
 
         } catch (Exception e) {
-            String rootCause = e.getCause() != null ? e.getCause().toString() : e.toString();
-            log.error("AI API 调用失败: {}", rootCause, e);
-            return "AI 调用失败: " + rootCause;
+            String rootCause = e.getCause() != null ? e.getCause().toString() : "";
+            log.error("AI API 调用失败 - 异常类型: {}, 根因: {}, 消息: {}",
+                e.getClass().getSimpleName(), rootCause, e.getMessage());
+            return null;
         }
     }
 }
