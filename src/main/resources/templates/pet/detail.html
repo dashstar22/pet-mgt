@@ -43,7 +43,7 @@
                     <div class="card-body">
                         <h3 class="card-title" th:text="${pet.name}">宠物名</h3>
                         <span class="badge fs-6 mb-3"
-                              th:classappend="${pet.status == 'available' ? 'bg-success' : (pet.status == 'pending' ? 'bg-warning' : 'bg-secondary')}"
+                              th:classappend="${pet.status == 'available' ? 'badge-available bg-success' : (pet.status == 'pending' ? 'bg-warning' : 'bg-secondary')}"
                               th:text="${pet.status == 'available' ? '可领养' : (pet.status == 'pending' ? '待审核' : '已领养')}">可领养</span>
 
                         <table class="table table-bordered mt-3">
