@@ -110,4 +110,28 @@ public class ApplicationController {
         }
         return "redirect:/user/applications";
     }
+
+    @PostMapping("/applications/{id}/delete")
+    public String deleteApplication(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            Long userId = SecurityUtil.getCurrentUser().getId();
+            applicationService.deleteById(id, userId);
+            redirectAttributes.addFlashAttribute("success", "申请记录已删除");
+        } catch (IllegalArgumentException e) {
+            throw new BusinessException(e.getMessage());
+        }
+        return "redirect:/user/applications";
+    }
+
+    @PostMapping("/applications/clear")
+    public String clearApplications(RedirectAttributes redirectAttributes) {
+        try {
+            Long userId = SecurityUtil.getCurrentUser().getId();
+            applicationService.deleteAllByUserId(userId);
+            redirectAttributes.addFlashAttribute("success", "所有申请记录已清空");
+        } catch (IllegalArgumentException e) {
+            throw new BusinessException(e.getMessage());
+        }
+        return "redirect:/user/applications";
+    }
 }

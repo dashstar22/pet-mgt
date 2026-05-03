@@ -109,6 +109,90 @@ public class ApplicationService {
     }
 
     @Transactional
+    public void deleteById(Long applicationId, Long userId) {
+        Application app = applicationMapper.selectById(applicationId);
+        if (app == null) {
+            throw new IllegalArgumentException("申请不存在");
+        }
+        if (!app.getUserId().equals(userId)) {
+            throw new IllegalArgumentException("无权操作");
+        }
+        if ("approved".equals(app.getStatus())) {
+            throw new IllegalArgumentException("已通过的申请不可删除");
+        }
+
+        Long petId = app.getPetId();
+        String status = app.getStatus();
+        applicationMapper.deleteById(applicationId);
+
+        if ("pending".equals(status)) {
+            revertPetIfNoPending(petId);
+        }
+    }
+
+    @Transactional
+    public void adminDeleteById(Long applicationId) {
+        Application app = applicationMapper.selectById(applicationId);
+        if (app == null) {
+            throw new IllegalArgumentException("申请不存在");
+        }
+        if ("approved".equals(app.getStatus())) {
+            throw new IllegalArgumentException("已通过的申请不可删除");
+        }
+
+        Long petId = app.getPetId();
+        String status = app.getStatus();
+        applicationMapper.deleteById(applicationId);
+
+        if ("pending".equals(status)) {
+            revertPetIfNoPending(petId);
+        }
+    }
+
+    @Transactional
+    public void deleteAllByUserId(Long userId) {
+        var wrapper = new LambdaQueryWrapper<Application>()
+            .eq(Application::getUserId, userId);
+        java.util.List<Application> userApps = applicationMapper.selectList(wrapper);
+        if (userApps.isEmpty()) {
+            throw new IllegalArgumentException("没有可删除的申请记录");
+        }
+
+        java.util.List<Application> toDelete = userApps.stream()
+            .filter(a -> !"approved".equals(a.getStatus()))
+            .collect(java.util.stream.Collectors.toList());
+        if (toDelete.isEmpty()) {
+            throw new IllegalArgumentException("已通过的申请不可删除，无可清理的记录");
+        }
+
+        java.util.Set<Long> pendingPetIds = toDelete.stream()
+            .filter(a -> "pending".equals(a.getStatus()))
+            .map(Application::getPetId)
+            .collect(java.util.stream.Collectors.toSet());
+
+        for (Application app : toDelete) {
+            applicationMapper.deleteById(app.getId());
+        }
+
+        for (Long petId : pendingPetIds) {
+            revertPetIfNoPending(petId);
+        }
+    }
+
+    private void revertPetIfNoPending(Long petId) {
+        Long pendingCount = applicationMapper.selectCount(new LambdaQueryWrapper<Application>()
+            .eq(Application::getPetId, petId)
+            .eq(Application::getStatus, "pending"));
+        if (pendingCount == 0) {
+            Pet pet = petMapper.selectById(petId);
+            if (pet != null) {
+                pet.setStatus("available");
+                petMapper.updateById(pet);
+            }
+        }
+    }
+
+    @Transactional
     public void reject(Long applicationId, Long adminId, String reason) {
         Application app = applicationMapper.selectById(applicationId);
         if (app == null) {

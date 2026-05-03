@@ -180,4 +180,15 @@ public class ApplicationController {
         }
         return "redirect:/admin/applications";
     }
+
+    @PostMapping("/{id}/delete")
+    public String delete(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            applicationService.adminDeleteById(id);
+            redirectAttributes.addFlashAttribute("success", "申请记录已删除");
+        } catch (IllegalArgumentException e) {
+            throw new BusinessException(e.getMessage());
+        }
+        return "redirect:/admin/applications";
+    }
 }
