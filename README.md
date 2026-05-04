@@ -14,7 +14,7 @@
    ```
 
 3. **配置环境变量**（可选，不配时使用默认值）：
-   - `DB_PASSWORD`：数据库密码（默认为 `123456`）
+   - `DB_PASSWORD`：数据库密码（默认为 `root`）
    - `DEEPSEEK_API_KEY`：DeepSeek API Key（不配则 AI 功能不可用）
 
 4. **启动项目**：
